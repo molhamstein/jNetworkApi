@@ -1,0 +1,14 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "mydb": {
+    "host": "127.0.0.1",
+    "database": "network_db",
+    "username": "root",
+    "password": "",
+    "name": "mydb",
+    "connector": "mysql"
+  }
+}
