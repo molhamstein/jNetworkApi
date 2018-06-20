@@ -10,6 +10,15 @@
     "mobile": {
       "type": "string",
       "required": true
+    },"gender": {
+      "type": "string",
+      "required": true
+    },"birthdate": {
+      "type": "string",
+      "required": true
+    },"profession": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],
