@@ -1,6 +1,6 @@
 'use strict';
 var speakeasy = require('speakeasy');
-var https = require('https');
+var http = require('http');
 var app = require('../../server/server');
 
 module.exports = function(Client) {
@@ -16,11 +16,12 @@ module.exports = function(Client) {
 					
 				  } 
 				});
-		  https.get(
+		  http.get(
 					  'http://services.mtn.com.sy/General/ConcatenatedSender.asp?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+client.mobile+'&' +
 						  '&Msg=Your+verification+code+is+' + code+'&Lang=0&Flash=0',
-					  function() {
+					  function(res) {
 						res.on('data', function(data) {
+							console.log(data);
 						  next();
 						});
 					  }
