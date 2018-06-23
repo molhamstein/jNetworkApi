@@ -17,18 +17,25 @@ module.exports = function(Client) {
 				  } 
 				});
 		  https.get(
-					  'https://rest.nexmo.com' +
-						  '/sms/json?api_key=[YOUR_KEY]&api_secret=[YOUR_SECRET]' +
-						  '&from=[YOUR_NUMBER]&to=[USER_MOBILE_#]' +
-						  '&text=Your+verification+code+is+' + code,
+					  'http://services.mtn.com.sy/General/ConcatenatedSender.asp?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+client.mobile+'&' +
+						  '&Msg=Your+verification+code+is+' + code+'&Lang=0&Flash=0',
 					  function() {
 						res.on('data', function(data) {
-						  // all done! handle the data as you need to
+						  next();
 						});
 					  }
 					).on('error', function() {
-						// handle errors somewhow
+						data = {
+						  name: "can't send sms",
+						  status: 604,
+						  message: "please check your sms api"
+						};
+						console.log(data)
+						context.result = data;
+						//console.log(context.result);
+						next();	
 					});
+			
   });
   Client.afterRemote('login', function(context, client, next) {
     //console.log(client.userId);
