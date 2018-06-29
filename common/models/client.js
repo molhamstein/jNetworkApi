@@ -5,6 +5,13 @@ var app = require('../../server/server');
 
 module.exports = function(Client) {
   //send verification email after registration
+  delete Client.validations.email;
+  var re = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
+
+    Client.validate('mobile', function (err) { if ( this.mobile !== undefined && !re.test(this.mobile)) err(); }, {message: 'mobile format is invalid'});
+
+    // Adds email uniqueness validation
+    Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'});  
   Client.afterRemote('create', function(context, client, next) {
     console.log('> user.afterRemote triggered');
 	 var code = speakeasy.totp({key: 'APP_SECRET' + client.email});
