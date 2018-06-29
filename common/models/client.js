@@ -5,7 +5,7 @@ var app = require('../../server/server');
 
 module.exports = function(Client) {
   //send verification email after registration
-  delete Client.validations.email;
+  delete Client.validations.username;
   var re = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
 
     Client.validate('mobile', function (err) { if ( this.mobile !== undefined && !re.test(this.mobile)) err(); }, {message: 'mobile format is invalid'});
