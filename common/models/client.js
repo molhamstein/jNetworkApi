@@ -27,7 +27,7 @@ module.exports = function(Client) {
 					'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+(client.mobile).substr(2)+'&Msg=YourVerificationCode'+code+'=&Lang=0&Flash=0',
 					  function(res) {
 						res.on('data', function(data) {
-							console.log(data);
+							console.log(string(data));
 						  next();
 						});
 					  }
