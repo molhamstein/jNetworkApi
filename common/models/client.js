@@ -2,11 +2,11 @@
 var speakeasy = require('speakeasy');
 var http = require('http');
 var app = require('../../server/server');
-
+const connector = app.dataSources.mydb.connector
 module.exports = function(Client) {
   //send verification email after registration
   delete Client.validations.username;
-  var re = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
+  var re = /^([0|\+[0-9]{1,13})?/;
 
     Client.validate('mobile', function (err) { if ( this.mobile !== undefined && !re.test(this.mobile)) err(); }, {message: 'mobile format is invalid'});
 
@@ -24,8 +24,7 @@ module.exports = function(Client) {
 				  } 
 				});
 		  http.get(
-					  'http://services.mtn.com.sy/General/ConcatenatedSender.asp?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+client.mobile+'&' +
-						  '&Msg=Your+verification+code+is+' + code+'&Lang=0&Flash=0',
+					'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+(client.mobile).substr(2)+'&Msg=YourVerificationCode'+code+'=&Lang=0&Flash=0',
 					  function(res) {
 						res.on('data', function(data) {
 							console.log(data);
@@ -90,6 +89,7 @@ module.exports = function(Client) {
 						});
 				  } 
 				});
+				var sql = " select * from cars inner join cars_meta on cars_meta.id_cars_m = cars.id_c inner join option_car on code_o = code_m inner join users on users.id_u = cars.id_user where id_cars_m = "
 				
 			 }
 			 else{
