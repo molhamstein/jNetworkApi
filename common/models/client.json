@@ -89,7 +89,7 @@
 	 "confirmSMS": {
       "accepts": [
         {
-          "arg": "email",
+          "arg": "mobile",
           "type": "string",
           "required": true,
           "description": "",
@@ -112,10 +112,10 @@
           "arg": "data",
           "type": "array",
           "root": true,
-          "description": "return array of cars & meta_cars objects"
+          "description": "return user activation status"
         }
       ],
-      "description": "fetch cars according to cars_meta filters (dynamic fields)",
+      "description": "confirm account using SMS code",
       "http": [
         {
           "path": "/confirm2",

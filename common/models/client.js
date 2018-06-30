@@ -69,9 +69,9 @@ module.exports = function(Client) {
 	
   });
   
-  Client.confirmSMS = function(email, token, callback) {
+  Client.confirmSMS = function(mobile, token, callback) {
 		var clientM = app.models.client;
-		clientM.findOne({where: { email: email }}, function(err, user) {
+		clientM.findOne({where: { mobile: mobile }}, function(err, user) {
 			
 			 if(user.verificationToken == token)
 			 {
@@ -89,7 +89,7 @@ module.exports = function(Client) {
 						});
 				  } 
 				});
-				var sql = " select * from cars inner join cars_meta on cars_meta.id_cars_m = cars.id_c inner join option_car on code_o = code_m inner join users on users.id_u = cars.id_user where id_cars_m = "
+				//var sql = " select * from cars inner join cars_meta on cars_meta.id_cars_m = cars.id_c inner join option_car on code_o = code_m inner join users on users.id_u = cars.id_user where id_cars_m = "
 				
 			 }
 			 else{
