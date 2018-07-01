@@ -78,6 +78,11 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "confirm"
+    },{
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "confirm2"
     }, {
       "principalType": "ROLE",
       "principalId": "$everyone",

@@ -24,7 +24,7 @@ module.exports = function(Client) {
 				  } 
 				});
 		  http.get(
-					'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+(client.mobile).substr(2)+'&Msg=YourVerificationCode'+code+'=&Lang=0&Flash=0',
+					'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+(client.mobile).substr(2)+'&Msg=YourVerificationCode '+String(code)+'=&Lang=0&Flash=0',
 					  function(res) {
 						res.on('data', function(data) {
 							console.log(data.toString());
@@ -44,6 +44,7 @@ module.exports = function(Client) {
 					});
 			
   });
+  
   Client.afterRemote('login', function(context, client, next) {
     //console.log(client.userId);
 	var clientM = app.models.client;
@@ -68,6 +69,40 @@ module.exports = function(Client) {
     });
 	
   });
+  
+   Client.afterRemote('reset', function(context, client, next) {
+    console.log('> user.afterRemote reset triggered');
+	 var code = speakeasy.totp({key: 'APP_SECRET' + client.mobile});
+          console.log('Two factor code for ' + client.email + ': ' + code);
+			client.updateAttributes({ verificationToken: code, emailVerified: false }, function(err) {
+				  if (err) {
+					
+				  } else {
+					
+				  } 
+				});
+		  http.get(
+					'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm='+(client.mobile).substr(2)+'&Msg=YourVerificationCode '+String(code)+'=&Lang=0&Flash=0',
+					  function(res) {
+						res.on('data', function(data) {
+							console.log(data.toString());
+						  next();
+						});
+					  }
+					).on('error', function() {
+						data = {
+						  name: "can't send sms",
+						  status: 604,
+						  message: "please check your sms api"
+						};
+						console.log(data)
+						context.result = data;
+						//console.log(context.result);
+						next();	
+					});
+			
+  });
+  
   
   Client.confirmSMS = function(mobile, token, callback) {
 		var clientM = app.models.client;
