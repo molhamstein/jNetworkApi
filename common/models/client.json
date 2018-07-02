@@ -103,7 +103,7 @@
           }
         },
 		{
-          "arg": "token",
+          "arg": "code",
           "type": "string",
           "required": true,
           "description": "",

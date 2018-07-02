@@ -104,11 +104,11 @@ module.exports = function(Client) {
   });
   
   
-  Client.confirmSMS = function(mobile, token, callback) {
+  Client.confirmSMS = function(mobile, code, callback) {
 		var clientM = app.models.client;
 		clientM.findOne({where: { mobile: mobile }}, function(err, user) {
 			
-			 if(user.verificationToken == token)
+			 if(user.verificationToken == code)
 			 {
 				user.updateAttributes({ verificationToken: null, emailVerified: true }, function(err) {
 				  if (err) {
