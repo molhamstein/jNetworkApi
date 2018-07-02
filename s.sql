@@ -19,10 +19,10 @@
 -- Table structure for table `ACL`
 --
 
-DROP TABLE IF EXISTS `ACL`;
+-- DROP TABLE IF EXISTS `ACL`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ACL` (
+CREATE TABLE IF NOT EXISTS `ACL` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `model` varchar(512) DEFAULT NULL,
   `property` varchar(512) DEFAULT NULL,
@@ -47,10 +47,10 @@ UNLOCK TABLES;
 -- Table structure for table `AccessToken`
 --
 
-DROP TABLE IF EXISTS `AccessToken`;
+-- DROP TABLE IF EXISTS `AccessToken`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `AccessToken` (
+CREATE TABLE IF NOT EXISTS `AccessToken` (
   `id` varchar(255) NOT NULL,
   `ttl` int(11) DEFAULT NULL,
   `scopes` text,
@@ -74,10 +74,10 @@ UNLOCK TABLES;
 -- Table structure for table `client`
 --
 
-DROP TABLE IF EXISTS `client`;
+-- DROP TABLE IF EXISTS `client`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `client` (
+CREATE TABLE IF NOT EXISTS `client` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `realm` varchar(512) DEFAULT NULL,
   `username` varchar(512) DEFAULT NULL,
@@ -107,10 +107,10 @@ UNLOCK TABLES;
 -- Table structure for table `nas`
 --
 
-DROP TABLE IF EXISTS `nas`;
+-- DROP TABLE IF EXISTS `nas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `nas` (
+CREATE TABLE IF NOT EXISTS `nas` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `nasname` varchar(128) NOT NULL,
   `shortname` varchar(32) DEFAULT NULL,
@@ -138,10 +138,10 @@ UNLOCK TABLES;
 -- Table structure for table `radacct`
 --
 
-DROP TABLE IF EXISTS `radacct`;
+-- DROP TABLE IF EXISTS `radacct`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radacct` (
+CREATE TABLE IF NOT EXISTS `radacct` (
   `radacctid` bigint(21) NOT NULL AUTO_INCREMENT,
   `acctsessionid` varchar(64) NOT NULL DEFAULT '',
   `acctuniqueid` varchar(32) NOT NULL DEFAULT '',
@@ -192,10 +192,10 @@ UNLOCK TABLES;
 -- Table structure for table `radcheck`
 --
 
-DROP TABLE IF EXISTS `radcheck`;
+-- DROP TABLE IF EXISTS `radcheck`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radcheck` (
+CREATE TABLE IF NOT EXISTS `radcheck` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL DEFAULT '',
   `attribute` varchar(64) NOT NULL DEFAULT '',
@@ -206,24 +206,16 @@ CREATE TABLE `radcheck` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `radcheck`
---
 
-LOCK TABLES `radcheck` WRITE;
-/*!40000 ALTER TABLE `radcheck` DISABLE KEYS */;
-INSERT INTO `radcheck` VALUES (1,'\n\nuser\n\n','\n\nCleartext-Password\n\n',':=','\n\npass\n\n'),(2,'\n\n00:0C:42:01:02:03\n\n','\n\nAuth-Type\n\n',':=','\n\nAccept\n\n'),(3,'s1','password','==','s1');
-/*!40000 ALTER TABLE `radcheck` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `radgroupcheck`
 --
 
-DROP TABLE IF EXISTS `radgroupcheck`;
+-- DROP TABLE IF EXISTS `radgroupcheck`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radgroupcheck` (
+CREATE TABLE IF NOT EXISTS `radgroupcheck` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupname` varchar(64) NOT NULL DEFAULT '',
   `attribute` varchar(64) NOT NULL DEFAULT '',
@@ -247,10 +239,10 @@ UNLOCK TABLES;
 -- Table structure for table `radgroupreply`
 --
 
-DROP TABLE IF EXISTS `radgroupreply`;
+-- DROP TABLE IF EXISTS `radgroupreply`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radgroupreply` (
+CREATE TABLE IF NOT EXISTS `radgroupreply` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupname` varchar(64) NOT NULL DEFAULT '',
   `attribute` varchar(64) NOT NULL DEFAULT '',
@@ -274,10 +266,10 @@ UNLOCK TABLES;
 -- Table structure for table `radpostauth`
 --
 
-DROP TABLE IF EXISTS `radpostauth`;
+-- DROP TABLE IF EXISTS `radpostauth`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radpostauth` (
+CREATE TABLE IF NOT EXISTS `radpostauth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL DEFAULT '',
   `pass` varchar(64) NOT NULL DEFAULT '',
@@ -300,10 +292,10 @@ UNLOCK TABLES;
 -- Table structure for table `radreply`
 --
 
-DROP TABLE IF EXISTS `radreply`;
+-- DROP TABLE IF EXISTS `radreply`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radreply` (
+CREATE TABLE IF NOT EXISTS `radreply` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL DEFAULT '',
   `attribute` varchar(64) NOT NULL DEFAULT '',
@@ -319,19 +311,17 @@ CREATE TABLE `radreply` (
 --
 
 LOCK TABLES `radreply` WRITE;
-/*!40000 ALTER TABLE `radreply` DISABLE KEYS */;
-INSERT INTO `radreply` VALUES (1,'\n\nuser\n\n','\n\nMikrotik-Group\n\n',':=','\n\nwrite\n\n'),(2,'\n\n00:0C:42:01:02:03\n\n','\n\nFramed-IP-Address\n\n',':=','\n\n172.17.2.2\n\n');
-/*!40000 ALTER TABLE `radreply` ENABLE KEYS */;
+
 UNLOCK TABLES;
 
 --
 -- Table structure for table `radusergroup`
 --
 
-DROP TABLE IF EXISTS `radusergroup`;
+-- DROP TABLE IF EXISTS `radusergroup`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `radusergroup` (
+CREATE TABLE IF NOT EXISTS `radusergroup` (
   `username` varchar(64) NOT NULL DEFAULT '',
   `groupname` varchar(64) NOT NULL DEFAULT '',
   `priority` int(11) NOT NULL DEFAULT '1',
@@ -352,10 +342,10 @@ UNLOCK TABLES;
 -- Table structure for table `role`
 --
 
-DROP TABLE IF EXISTS `role`;
+-- DROP TABLE IF EXISTS `role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `role` (
+CREATE TABLE IF NOT EXISTS `role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(512) NOT NULL,
   `description` varchar(512) DEFAULT NULL,
@@ -378,10 +368,10 @@ UNLOCK TABLES;
 -- Table structure for table `rolemapping`
 --
 
-DROP TABLE IF EXISTS `rolemapping`;
+-- DROP TABLE IF EXISTS `rolemapping`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `rolemapping` (
+CREATE TABLE IF NOT EXISTS `rolemapping` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `principalType` varchar(512) DEFAULT NULL,
   `principalId` varchar(255) DEFAULT NULL,
@@ -404,10 +394,10 @@ UNLOCK TABLES;
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
+-- DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `realm` varchar(512) DEFAULT NULL,
   `username` varchar(512) DEFAULT NULL,
