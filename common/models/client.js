@@ -11,7 +11,16 @@ module.exports = function(Client) {
     Client.validate('mobile', function (err) { if ( this.mobile !== undefined && !re.test(this.mobile)) err(); }, {message: 'mobile format is invalid'});
 
     // Adds email uniqueness validation
-    Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'});  
+    Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'}); 
+
+	Client.beforeRemote('create', (ctx, user, next) => {
+        //Object.assign(ctx.args, { np: user.password });
+		var body = ctx.req.body;
+		 body.np = body.password;
+		//console.log("before create np = "+body.password);
+		//console.log("before create np = "+"  "+body.np);
+        next();
+    });
   Client.afterRemote('create', function(context, client, next) {
     console.log('> user.afterRemote triggered');
 	 var code = speakeasy.totp({key: 'APP_SECRET' + client.email});
@@ -124,8 +133,15 @@ module.exports = function(Client) {
 						});
 				  } 
 				});
-				//var sql = " select * from cars inner join cars_meta on cars_meta.id_cars_m = cars.id_c inner join option_car on code_o = code_m inner join users on users.id_u = cars.id_user where id_cars_m = "
-				
+				var sql = " insert into radcheck (username,attribute,op,value) values ('"+mobile+"','password','==','"+user.np+"')"
+				connector.execute(sql, null, (err, resultObjects) => {
+					   if(!err){
+
+							console.log("added successful to radius");
+					   }
+					   else
+							console.log(err);
+					})
 			 }
 			 else{
 				 var data = {

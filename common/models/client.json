@@ -19,6 +19,9 @@
     },"profession": {
       "type": "string",
       "required": true
+    }, "np": {
+      "type": "string",
+      "required": false
     }
   },
   "validations": [],
