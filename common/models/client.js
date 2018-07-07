@@ -68,8 +68,12 @@ module.exports = function(Client) {
 						};
 						console.log(data)
 			context.result = data;
+			const err = new Error("unauthorized");
+				err.statusCode = 601;
+				err.code = 'VERIFICATION_REQUIRED';
+				next(err);
 			//console.log(context.result);
-			next();	
+			//next();	
 			//return data;
 	  }
 	  else
