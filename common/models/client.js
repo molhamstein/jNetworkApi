@@ -123,7 +123,7 @@ module.exports = function(Client) {
 			
 			 if(user.verificationToken == code)
 			 {
-				user.updateAttributes({ verificationToken: null, emailVerified: true }, function(err) {
+				user.updateAttributes({ emailVerified: true }, function(err) {
 				  if (err) {
 					fn(err);
 				  } else {
