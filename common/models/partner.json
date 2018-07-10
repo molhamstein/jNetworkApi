@@ -1,0 +1,36 @@
+{
+  "name": "partner",
+  "plural": "patners",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "fullname": {
+      "type": "string",
+      "required": true
+    },
+    "partner_mobile": {
+      "type": "string",
+      "required": true
+    },
+    "businessName": {
+      "type": "string"
+    },
+    "balance": {
+      "type": "string"
+    },
+    "min_balance": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "default": "active"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

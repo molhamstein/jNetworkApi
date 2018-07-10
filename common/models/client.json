@@ -10,91 +10,108 @@
     "mobile": {
       "type": "string",
       "required": true
-    },"gender": {
+    },
+    "gender": {
       "type": "string",
       "required": true
-    },"birthdate": {
+    },
+    "birthdate": {
       "type": "string",
       "required": true
-    },"profession": {
+    },
+    "profession": {
       "type": "string",
       "required": true
-    }, "np": {
+    },
+    "np": {
       "type": "string",
       "required": false
     }
   },
   "validations": [],
   "relations": {},
-  "acls": [{
+  "acls": [
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "DENY"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "create"
-    },{
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "confirmSMS"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "findAll"
-    },{
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "findOne"
     },
-	{
+    {
       "principalType": "ROLE",
       "principalId": "$owner",
       "permission": "ALLOW",
       "property": "deleteById"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "login"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "logout"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$owner",
       "permission": "ALLOW",
       "property": "findById"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$owner",
       "permission": "ALLOW",
       "property": "updateAttributes"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "confirm"
-    },{
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "confirm2"
-    }, {
+    },
+    {
+      "accessType": "EXECUTE",
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
-      "property": "resetPassword",
-      "accessType": "EXECUTE"
-    }],
+      "property": "resetPassword"
+    }
+  ],
   "methods": {
-	 "confirmSMS": {
+    "confirmSMS": {
       "accepts": [
         {
           "arg": "mobile",
@@ -105,7 +122,7 @@
             "source": "query"
           }
         },
-		{
+        {
           "arg": "code",
           "type": "string",
           "required": true,
@@ -133,4 +150,3 @@
     }
   }
 }
-

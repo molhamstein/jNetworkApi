@@ -120,8 +120,16 @@ module.exports = function(Client) {
   Client.confirmSMS = function(mobile, code, callback) {
 		var clientM = app.models.client;
 		clientM.findOne({where: { mobile: mobile }}, function(err, user) {
-			
-			 if(user.verificationToken == code)
+			  if(err || user==null)
+			  {
+				    const err2 = new Error("userNOTfound");
+						err2.statusCode = 604;
+						err2.code = 'USER_NOT_FOUND';
+					process.nextTick(function() {
+						  callback(null, err2);
+						});
+			  }
+			 else if(user.verificationToken == code)
 			 {
 				user.updateAttributes({ emailVerified: true }, function(err) {
 				  if (err) {
@@ -148,13 +156,11 @@ module.exports = function(Client) {
 					})
 			 }
 			 else{
-				 var data = {
-							 name: "Failed",
-							status: 503,
-							message:"authorization Faild"
-						}
-						process.nextTick(function() {
-						  callback(null, data);
+				  const err3 = new Error("AuthorizationFailed");
+						err3.statusCode = 601;
+						err3.code = 'AUTHORIZATION_FAILED';
+					process.nextTick(function() {
+						  callback(null, err3);
 						});
 			 }
 		    
