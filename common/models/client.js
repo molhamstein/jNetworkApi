@@ -2,7 +2,7 @@
 var speakeasy = require('speakeasy');
 var http = require('http');
 var app = require('../../server/server');
-const connector = app.dataSources.mydb.connector
+const connector = app.dataSources.mydb.connector;
 module.exports = function(Client) {
   //send verification email after registration
   delete Client.validations.username;
@@ -80,6 +80,25 @@ module.exports = function(Client) {
 		  next();
 		    
     });
+	
+  });
+  Client.afterRemote('Confirmreset', function(context, data, next) {
+    console.log(data.mobile);
+	var clientM = app.models.client;
+	//var data = client;
+	clientM.findOne({where: { mobile: data.mobile }}, function(err, user) {
+      var sql = " update radcheck set value='"+user.np+"' where username='"+user.mobile+"' and attribute='password'";
+		connector.execute(sql, null, (err, resultObjects) => {
+			   if(!err){
+
+					console.log("updated successful to radius");
+			   }
+			   else
+					console.log(err);
+			})
+		    
+    });
+	next();
 	
   });
   
