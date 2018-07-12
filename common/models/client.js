@@ -84,20 +84,24 @@ module.exports = function(Client) {
   });
   Client.afterRemote('Confirmreset', function(context, data, next) {
     console.log(data.mobile);
-	var clientM = app.models.client;
+	if(data.mobile)
+	{
+		var clientM = app.models.client;
 	//var data = client;
-	clientM.findOne({where: { mobile: data.mobile }}, function(err, user) {
-      var sql = " update radcheck set value='"+user.np+"' where username='"+user.mobile+"' and attribute='password'";
-		connector.execute(sql, null, (err, resultObjects) => {
-			   if(!err){
+		clientM.findOne({where: { mobile: data.mobile }}, function(err, user) {
+		  var sql = " update radcheck set value='"+user.np+"' where username='"+user.mobile+"' and attribute='password'";
+			connector.execute(sql, null, (err, resultObjects) => {
+				   if(!err){
 
-					console.log("updated successful to radius");
-			   }
-			   else
-					console.log(err);
-			})
-		    
-    });
+						console.log("updated successful to radius");
+				   }
+				   else
+						console.log(err);
+				})
+				
+		});
+	}
+	
 	next();
 	
   });
