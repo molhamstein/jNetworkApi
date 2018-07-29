@@ -5,9 +5,9 @@
   },
   "mydb": {
     "host": "127.0.0.1",
-    "database": "network_db",
+    "database": "radius",
     "username": "root",
-    "password": "",
+    "password": "jihad_lts",
     "name": "mydb",
     "connector": "mysql"
   }
