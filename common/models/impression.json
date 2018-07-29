@@ -1,0 +1,23 @@
+{
+  "name": "impression",
+  "plural": "impressions",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "required": true
+    },
+    "ad_id": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

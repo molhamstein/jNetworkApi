@@ -43,5 +43,21 @@
   "partner": {
     "dataSource": "mydb",
     "public": true
+  },
+  "AD": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "attachment": {
+    "dataSource": "storage",
+    "public": true
+  },
+  "impression": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "click": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

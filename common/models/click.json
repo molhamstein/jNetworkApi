@@ -1,0 +1,23 @@
+{
+  "name": "click",
+  "plural": "clicks",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "ad_id": {
+      "type": "number",
+      "required": true
+    },
+    "client_id": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
