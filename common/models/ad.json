@@ -1,0 +1,53 @@
+{
+  "name": "AD",
+  "plural": "ADs",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "mixins": {
+    "Counts": true
+  },
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "string"
+    },
+    "media_link": {
+      "type": "string"
+    },
+    "thumb_link": {
+      "type": "string"
+    },
+    "status": {
+      "type": "number",
+      "required": true,
+      "default": 1
+    },
+    "advertiser_id": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "impressions": {
+      "type": "hasMany",
+      "model": "impression",
+      "foreignKey": "ad_id"
+    },
+    "clicks": {
+      "type": "hasMany",
+      "model": "click",
+      "foreignKey": "ad_id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

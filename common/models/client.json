@@ -102,7 +102,7 @@
       "permission": "ALLOW",
       "property": "confirm2"
     },
-	{
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",

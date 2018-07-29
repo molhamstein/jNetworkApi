@@ -10,5 +10,11 @@
     "password": "jihad_lts",
     "name": "mydb",
     "connector": "mysql"
+  },
+  "storage": {
+    "name": "storage",
+    "connector": "loopback-component-storage",
+    "provider": "filesystem",
+    "root": "./uploads"
   }
 }

@@ -30,7 +30,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "ADs": {
+      "type": "hasMany",
+      "model": "AD",
+      "foreignKey": "advertiser_id"
+    }
+  },
   "acls": [],
   "methods": {}
 }
