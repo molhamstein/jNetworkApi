@@ -3,6 +3,8 @@ const isImage = require('is-image');
 var ffmpeg = require('fluent-ffmpeg');
 var thumb = require('node-thumbnail').thumb;
 const path = require('path');
+const ffprobePath = require('@ffprobe-installer/ffprobe').path;
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var thumbler = require('video-thumb');
 module.exports = function(Attachment) {
 	 // practical example
@@ -19,6 +21,8 @@ module.exports = function(Attachment) {
 	
 	Attachment.afterRemote('upload', function (context, result, next) {
         let files = [];
+		ffmpeg.setFfprobePath(ffprobePath);
+		ffmpeg.setFfmpegPath(ffmpegPath);
         // folder name come from url request
         var folderName = context.req.params.container;
 
