@@ -8,6 +8,13 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var thumbler = require('video-thumb');
 module.exports = function(Attachment) {
 	 // practical example
+	/*Attachment.dataSources.storage.connector.getFilename = function (origFilename, req, res) {
+        var origFilename = origFilename.name;
+        var parts = origFilename.split('.'),
+        extension = parts[parts.length-1];
+        var newFilename = (new Date()).getTime()+'_'+parts[parts.length-2]+'.'+extension;
+        return newFilename;
+  }*/
   Attachment.afterRemote('upload', function(ctx, unused, next) {
 		console.log('vvv: good');
 		var files = ctx.result.result.files.file;
