@@ -23,8 +23,11 @@
     "start": {
       "type": "date"
     },
-    "end": {
-      "type": "date"
+    "duration": {
+      "type": "number"
+    },
+    "completed_precentage": {
+      "type": "number"
     },
     "status": {
       "type": "string"
@@ -40,6 +43,11 @@
         "nestRemoting": true
       },
       "through": "campaign_ad"
+    },
+    "criterias": {
+      "type": "hasMany",
+      "model": "criteria",
+      "foreignKey": "campaign_id"
     }
   },
   "acls": [],

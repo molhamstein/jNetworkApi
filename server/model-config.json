@@ -68,5 +68,9 @@
   "campaign_ad": {
     "dataSource": "mydb",
     "public": true
+  },
+  "criteria": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

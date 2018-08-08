@@ -1,0 +1,27 @@
+{
+  "name": "criteria",
+  "plural": "criterias",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "type": {
+      "type": "string",
+      "default": "gender"
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "campaign_id": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
