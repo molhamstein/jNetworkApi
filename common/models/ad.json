@@ -46,6 +46,15 @@
       "type": "hasMany",
       "model": "click",
       "foreignKey": "ad_id"
+    },
+    "campaigns": {
+      "type": "hasMany",
+      "model": "campaign",
+      "foreignKey": "ad_id",
+      "options": {
+        "nestRemoting": true
+      },
+      "through": "campaign_ad"
     }
   },
   "acls": [],

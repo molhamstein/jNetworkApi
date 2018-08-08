@@ -1,0 +1,21 @@
+{
+  "name": "campaign_ad",
+  "plural": "campaign_ads",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "ad_id": {
+      "type": "number"
+    },
+    "campaign_id": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

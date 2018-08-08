@@ -33,8 +33,17 @@
   "session": {},
   "auth": {},
   "parse": {
-    "body-parser#json": { "params" : { "limit" : "50mb"} },
-    "body-parser#urlencoded": {"params": { "limit" : "50mb", "extended": true }}
+    "body-parser#json": {
+      "params": {
+        "limit": "50mb"
+      }
+    },
+    "body-parser#urlencoded": {
+      "params": {
+        "limit": "50mb",
+        "extended": true
+      }
+    }
   },
   "routes": {
     "loopback#rest": {
@@ -47,7 +56,6 @@
   "final": {
     "loopback#urlNotFound": {}
   },
-  
   "final:after": {
     "strong-error-handler": {}
   }

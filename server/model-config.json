@@ -9,7 +9,7 @@
     "mixins": [
       "loopback/common/mixins",
       "loopback/server/mixins",
-	  "../node_modules/loopback-counts-mixin",
+      "../node_modules/loopback-counts-mixin",
       "../common/mixins",
       "./mixins"
     ]
@@ -58,6 +58,14 @@
     "public": true
   },
   "click": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "campaign": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "campaign_ad": {
     "dataSource": "mydb",
     "public": true
   }

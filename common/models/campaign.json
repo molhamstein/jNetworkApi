@@ -1,0 +1,47 @@
+{
+  "name": "campaign",
+  "plural": "campaigns",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "string"
+    },
+    "CPI": {
+      "type": "string"
+    },
+    "CPC": {
+      "type": "string"
+    },
+    "start": {
+      "type": "date"
+    },
+    "end": {
+      "type": "date"
+    },
+    "status": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "aDs": {
+      "type": "hasMany",
+      "model": "AD",
+      "foreignKey": "campaign_id",
+      "options": {
+        "nestRemoting": true
+      },
+      "through": "campaign_ad"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
