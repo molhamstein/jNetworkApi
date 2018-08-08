@@ -34,7 +34,7 @@
     "ADs": {
       "type": "hasMany",
       "model": "AD",
-      "foreignKey": "advertiser_id"
+      "foreignKey": "partner_id"
     }
   },
   "acls": [],
