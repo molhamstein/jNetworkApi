@@ -7,19 +7,39 @@ module.exports = function(Client) {
   //send verification email after registration
   delete Client.validations.username;
   var re = /^([0|\+[0-9]{1,13})?/;
-
+	delete Client.validations.email;
     Client.validate('mobile', function (err) { if ( this.mobile !== undefined && !re.test(this.mobile)) err(); }, {message: 'mobile format is invalid'});
 
     // Adds email uniqueness validation
-    Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'}); 
+  //  Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'}); 
+
 
 	Client.beforeRemote('create', (ctx, user, next) => {
-        //Object.assign(ctx.args, { np: user.password });
-		var body = ctx.req.body;
-		 body.np = body.password;
-		//console.log("before create np = "+body.password);
-		//console.log("before create np = "+"  "+body.np);
-        next();
+				//Object.assign(ctx.args, { np: user.password });
+			
+				var body = ctx.req.body;
+				var clientM = app.models.client;
+				console.log(body.mobile);
+				clientM.findOne({where: { mobile: body.mobile }}, function(err, userResult) {
+					//console.log(userResult.mobile);
+					if(userResult)
+					{
+							const err2 = new Error("Mobile already exists");
+								err2.statusCode = 622;
+								err2.code = 'Mobile_already_exists';
+								next(err2);
+					}
+					else{
+						
+						body.np = body.password;
+					 //console.log("before create np = "+body.password);
+					 //console.log("before create np = "+"  "+body.np);
+							 next();
+					}
+				
+							
+				});
+	
     });
   Client.afterRemote('create', function(context, client, next) {
     console.log('> user.afterRemote triggered');
