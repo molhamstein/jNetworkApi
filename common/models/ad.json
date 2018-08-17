@@ -63,7 +63,15 @@
   "acls": [],
   "methods": {"randomAD": {
     "accepts": [
-     
+      {
+        "arg": "limit",
+        "type": "int",
+        "required": true,
+        "description": "",
+        "http": {
+          "source": "query"
+        }
+      }
     ],
     "returns": [
       {
