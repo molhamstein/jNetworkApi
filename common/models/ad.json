@@ -33,6 +33,9 @@
     },
     "partner_id": {
       "type": "string"
+    },
+    "link": {
+      "type": "string"
     }
   },
   "validations": [],
@@ -58,5 +61,24 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {"randomAD": {
+    "accepts": [
+     
+    ],
+    "returns": [
+      {
+        "arg": "ADs",
+        "type": "array",
+        "root": true,
+        "description": "return random ad"
+      }
+    ],
+    "description": "get random ad",
+    "http": [
+      {
+        "path": "/RandomAD",
+        "verb": "get"
+      }
+    ]
+  }}
 }
