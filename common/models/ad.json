@@ -65,7 +65,7 @@
     "accepts": [
       {
         "arg": "limit",
-        "type": "int",
+        "type": "string",
         "required": true,
         "description": "",
         "http": {
