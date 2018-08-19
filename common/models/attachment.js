@@ -6,6 +6,7 @@ const path = require('path');
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var thumbler = require('video-thumb');
+var base_url = "http://185.84.236.39:3000/";
 module.exports = function(Attachment) {
 	 // practical example
 	/*Attachment.dataSources.storage.connector.getFilename = function (origFilename, req, res) {
@@ -52,7 +53,7 @@ module.exports = function(Attachment) {
                 });
                 var parts = file.name.split('.');
                 var extension = parts[parts.length - 1];
-                files.push({ 'file': src + "/" + folderName + "/" + file.name, 'thumbnail': src + '/thumb_link/' + file.name.substring(0, file.name.lastIndexOf('.')) + "_thumb." + extension });
+                files.push({ 'file': base_url+"api/attachments/media_link/download/" + file.name, 'thumbnail': base_url+"api/attachments/thumb_link/download/" + file.name.substring(0, file.name.lastIndexOf('.')) + "_thumb." + extension });
 
 			}
             else {
@@ -69,7 +70,7 @@ module.exports = function(Attachment) {
 						console.log('snapshot saved to snapshot.png (200x125) with a frame at 00:00:22');
 
 					});*/
-                files.push({ 'file': src + "/" + folderName + "/" + file.name, 'thumbnail': src + '/thumb_link/' + file.name.substring(0, file.name.lastIndexOf('.')) + "_thumb.PNG" });
+                files.push({ 'file': base_url+"api/attachments/media_link/download/" + file.name, 'thumbnail': base_url+"api/attachments/thumb_link/download/" + file.name.substring(0, file.name.lastIndexOf('.')) + "_thumb.PNG" });
 
             }
            
