@@ -11,6 +11,10 @@
       "type": "string",
       "required": true
     },
+    "campaign_id": {
+      "type": "number",
+      "required": false
+    },
     "ad_id": {
       "type": "number",
       "required": true
