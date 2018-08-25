@@ -11,19 +11,24 @@
     "posttest": "npm run lint && nsp check"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.15",
     "@ffprobe-installer/ffprobe": "^1.0.9",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
+    "fluent-ffmpeg": "^2.1.2",
     "helmet": "^3.10.0",
+    "is-image": "^2.0.0",
     "loopback": "^3.0.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^5.0.0",
     "loopback-component-storage": "^3.5.0",
     "loopback-connector-mysql": "^5.2.0",
     "loopback-counts-mixin": "^1.0.1",
+    "node-thumbnail": "^0.14.0",
     "serve-favicon": "^2.0.1",
     "speakeasy": "^2.0.0",
-    "strong-error-handler": "^2.0.0"
+    "strong-error-handler": "^2.0.0",
+    "video-thumb": "0.0.3"
   },
   "devDependencies": {
     "eslint": "^3.17.1",
