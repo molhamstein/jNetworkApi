@@ -35,6 +35,16 @@
   },
   "validations": [],
   "relations": {
+    "impressions": {
+      "type": "hasMany",
+      "model": "impression",
+      "foreignKey": "campaign_id"
+    },
+    "clicks": {
+      "type": "hasMany",
+      "model": "click",
+      "foreignKey": "campaign_id"
+    },
     "aDs": {
       "type": "hasMany",
       "model": "AD",

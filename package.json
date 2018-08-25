@@ -8,6 +8,7 @@
   "scripts": {
     "lint": "eslint .",
     "start": "node .",
+    "db": "babel-node database/migrate.js",
     "posttest": "npm run lint && nsp check"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "loopback-connector-mysql": "^5.2.0",
     "loopback-counts-mixin": "^1.0.1",
     "node-thumbnail": "^0.14.0",
+    "loopback-seed": "^1.0.1",
     "serve-favicon": "^2.0.1",
     "speakeasy": "^2.0.0",
     "strong-error-handler": "^2.0.0",
