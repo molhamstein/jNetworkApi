@@ -1,6 +1,6 @@
 {
   "name": "partner",
-  "plural": "patners",
+  "plural": "partners",
   "base": "User",
   "idInjection": true,
   "options": {
