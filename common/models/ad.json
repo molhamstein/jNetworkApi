@@ -23,6 +23,9 @@
     "media_link": {
       "type": "string"
     },
+    "ad_text": {
+      "type": "string"
+    },
     "thumb_link": {
       "type": "string"
     },
@@ -67,6 +70,15 @@
         "arg": "limit",
         "type": "string",
         "required": true,
+        "description": "",
+        "http": {
+          "source": "query"
+        }
+      },
+      {
+        "arg": "client_id",
+        "type": "number",
+        "required": false,
         "description": "",
         "http": {
           "source": "query"
