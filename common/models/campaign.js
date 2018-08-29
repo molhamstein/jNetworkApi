@@ -10,7 +10,7 @@ module.exports = function(Campaign) {
         //CampaignM.findOne({where: { status: 1 },order: 'RAND()'}, cb);
         CampaignM.find( {where: { partner_id: partner_id} }, function(err, campaignes) {
             // check for errors first...
-            if (err) {
+            if (err || !campaignes) {
                 // handle the error somehow...
                 process.nextTick(function() {
                     const err2 = new Error("Partner Not found");
