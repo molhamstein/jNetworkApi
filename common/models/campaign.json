@@ -26,6 +26,12 @@
     "duration": {
       "type": "number"
     },
+    "partner_id": {
+      "type": "number"
+    },
+    "value": {
+      "type": "number"
+    },
     "completed_precentage": {
       "type": "number"
     },
@@ -61,5 +67,35 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {
+    "states": {
+      "accepts": [
+       
+        {
+          "arg": "partner_id",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "states",
+          "type": "array",
+          "root": true,
+          "description": "return campaigns statestic"
+        }
+      ],
+      "description": "get campaigns statestic",
+      "http": [
+        {
+          "path": "/states",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }

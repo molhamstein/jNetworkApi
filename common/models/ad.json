@@ -64,7 +64,8 @@
     }
   },
   "acls": [],
-  "methods": {"randomAD": {
+  "methods": {
+    "randomAD": {
     "accepts": [
       {
         "arg": "limit",
