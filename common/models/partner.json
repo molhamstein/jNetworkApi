@@ -35,6 +35,11 @@
       "type": "hasMany",
       "model": "AD",
       "foreignKey": "partner_id"
+    },
+    "Campaigns": {
+      "type": "hasMany",
+      "model": "campaign",
+      "foreignKey": "partner_id"
     }
   },
   "acls": [],
