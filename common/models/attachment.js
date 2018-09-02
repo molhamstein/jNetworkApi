@@ -26,6 +26,18 @@ module.exports = function(Attachment) {
 		console.log(item.name);
 		var name = item.name;
 		next();
+    }); // works
+    
+    Attachment.beforeRemote('upload', function(ctx, unused, next) {
+        var folderName = ctx.req.params.container;
+       
+        let src = path.join(__dirname, '../../uploads');
+        var dir = src + "/" + folderName;
+        if (!fs.existsSync(dir)){
+            console.log(dir);
+            fs.mkdirSync(dir);
+        }
+        next();
 	}); // works
 	
 	Attachment.afterRemote('upload', function (context, result, next) {
@@ -36,14 +48,13 @@ module.exports = function(Attachment) {
         var folderName = context.req.params.container;
        
         let src = path.join(__dirname, '../../uploads');
-        var dir = src + "/" + folderName;
-        if (!fs.existsSync(dir)){
-            fs.mkdirSync(dir);
-        }
+        //var dir = src + "/" + folderName;
+       console.log(src);
         if (process.env.NODE_ENV != undefined) {
             ffmpeg.setFfmpegPath(path.join(config.thumbUrl + config.programFFmpegName[0]));
             ffmpeg.setFfprobePath(path.join(config.thumbUrl + config.programFFmpegName[1]));
         }
+
         result.result.files.file.forEach((file) => {
             // cheack type of file from folder name request
 			console.log(src + "/" + folderName + "/" + file.name)
