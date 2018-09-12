@@ -5,7 +5,7 @@
   },
   "mydb": {
     "host": "127.0.0.1",
-    "database": "redius",
+    "database": "radius",
     "username": "root",
     "password": "foxRiver123!@#",
     "name": "mydb",
