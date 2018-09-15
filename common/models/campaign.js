@@ -4,7 +4,7 @@ const connector = app.dataSources.mydb.connector;
 module.exports = function(Campaign) {
     Campaign.states = function(partner_id,cb) {
 		var CampaignM = app.models.Campaign;
-        var current_progress;
+        var current_progress=[];
         var campaign_clicks =[];
         var campaign_impressions=[];
         //CampaignM.findOne({where: { status: 1 },order: 'RAND()'}, cb);
