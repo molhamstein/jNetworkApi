@@ -11,9 +11,6 @@
       "type": "string",
       "required": true
     },
-    "mobile": {
-      "type": "string"
-    },
     "campaign_id": {
       "type": "number",
       "required": false

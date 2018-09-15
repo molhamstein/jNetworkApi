@@ -84,6 +84,15 @@
           "http": {
             "source": "query"
           }
+        },
+        {
+          "arg": "mobile",
+          "type": "string",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
         }
       ],
       "returns": [
