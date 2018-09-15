@@ -66,40 +66,50 @@
   "acls": [],
   "methods": {
     "randomAD": {
-    "accepts": [
-      {
-        "arg": "limit",
-        "type": "string",
-        "required": true,
-        "description": "",
-        "http": {
-          "source": "query"
+      "accepts": [
+        {
+          "arg": "limit",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        },
+        {
+          "arg": "client_id",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        },
+        {
+          "arg": "mobile",
+          "type": "string",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
         }
-      },
-      {
-        "arg": "client_id",
-        "type": "number",
-        "required": false,
-        "description": "",
-        "http": {
-          "source": "query"
+      ],
+      "returns": [
+        {
+          "arg": "ADs",
+          "type": "array",
+          "root": true,
+          "description": "return random ad"
         }
-      }
-    ],
-    "returns": [
-      {
-        "arg": "ADs",
-        "type": "array",
-        "root": true,
-        "description": "return random ad"
-      }
-    ],
-    "description": "get random ad",
-    "http": [
-      {
-        "path": "/RandomAD",
-        "verb": "get"
-      }
-    ]
-  }}
+      ],
+      "description": "get random ad",
+      "http": [
+        {
+          "path": "/RandomAD",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }

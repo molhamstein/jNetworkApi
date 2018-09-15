@@ -7,7 +7,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "start": "node .",
+    "start": "nodemon .",
     "db": "babel-node database/migrate.js",
     "posttest": "npm run lint && nsp check"
   },

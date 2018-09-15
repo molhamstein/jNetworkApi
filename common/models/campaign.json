@@ -70,7 +70,6 @@
   "methods": {
     "states": {
       "accepts": [
-       
         {
           "arg": "partner_id",
           "type": "number",
