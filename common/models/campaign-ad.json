@@ -17,5 +17,61 @@
   "validations": [],
   "relations": {},
   "acls": [],
-  "methods": {}
+  "methods": {
+    "getAdsByCriteria": {
+      "accepts": [
+        {
+          "arg": "client_id",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        },
+        {
+          "arg": "mobile",
+          "type": "string",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        },
+        {
+          "arg": "location_id",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        },
+        {
+          "arg": "limit",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "ads",
+          "type": "array",
+          "root": true,
+          "description": "return random Ads"
+        }
+      ],
+      "description": "get random ads in random campaigns",
+      "http": [
+        {
+          "path": "/getAds",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }
