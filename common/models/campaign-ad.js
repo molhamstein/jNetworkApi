@@ -8,8 +8,8 @@ module.exports = function(Campaignad) {
         	if(!client)
     			  return cb(ERROR(404,'client not found'));
 
-          var clientAge = 31;
-
+          var clientAge = new Date().getFullYear() - new Date(client.birthdate).getFullYear();
+          console.log(clientAge)
       		var sql = "SELECT campaign.id as CID, campaign.status, campaign.start, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id order by campaign_id"
       		Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
