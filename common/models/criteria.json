@@ -11,9 +11,17 @@
       "type": "string",
       "default": "gender"
     },
+    "operator" :{
+      "type" : "string",
+      "required" : true,
+      "default" : "="
+    },
     "value": {
       "type": "string",
       "required": true
+    },
+    "value2": {
+      "type": "string"
     },
     "campaign_id": {
       "type": "number",

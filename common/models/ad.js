@@ -2,7 +2,7 @@
 var app = require('../../server/server');
 const connector = app.dataSources.mydb.connector;
 module.exports = function(Ad) {
-    Ad.randomAD = function(limit,client_id,mobile,cb) {
+    Ad.randomAD = function(limit,client_id,mobile,location_id=null,cb) {
 		var adM = app.models.AD;
 			 
         //adM.findOne({where: { status: 1 },order: 'RAND()'}, cb);
@@ -15,7 +15,7 @@ module.exports = function(Ad) {
                         if(client_id!=null && client_id!="")
                         {
                             for (var i = 0; i < resultObjects.length; i++) {
-                                sql = " insert into impression (client_id,ad_id) values ('"+client_id+"','"+resultObjects[i].id+"')"
+                                sql = " insert into impression (client_id,ad_id,location_id) values ('"+client_id+"','"+resultObjects[i].id+"','"+location_id+"')"
                                connector.execute(sql, null, (err, resultObjects) => {
                                       if(!err){
                                         console.log("added successful to radius");
@@ -34,7 +34,7 @@ module.exports = function(Ad) {
                               return console.log("client not found");
                             client_id = client.id; 
                             for (var i = 0; i < resultObjects.length; i++) {
-                                sql = " insert into impression (client_id,ad_id) values ('"+client_id+"','"+resultObjects[i].id+"')"
+                                sql = " insert into impression (client_id,ad_id,location_id) values ('"+client_id+"','"+resultObjects[i].id+"','"+location_id+"')"
                                connector.execute(sql, null, (err, resultObjects) => {
                                       if(!err){
                

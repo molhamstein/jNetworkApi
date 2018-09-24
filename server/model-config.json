@@ -72,5 +72,9 @@
   "criteria": {
     "dataSource": "mydb",
     "public": true
+  },
+  "locations": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

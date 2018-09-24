@@ -93,6 +93,15 @@
           "http": {
             "source": "query"
           }
+        },
+        {
+          "arg": "location_id",
+          "type": "number",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
         }
       ],
       "returns": [
