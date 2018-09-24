@@ -114,6 +114,13 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "resetPassword"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "customSms"
     }
   ],
   "methods": {
