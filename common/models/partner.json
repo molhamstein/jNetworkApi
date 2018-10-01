@@ -42,6 +42,13 @@
       "foreignKey": "partner_id"
     }
   },
-  "acls": [],
+  "acls": [
+  {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "count"
+    }
+  ],
   "methods": {}
 }
