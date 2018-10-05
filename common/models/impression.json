@@ -18,6 +18,9 @@
     "ad_id": {
       "type": "number",
       "required": true
+    },
+    "creation_date": {
+      "type": "string"
     }
   },
   "validations": [],
