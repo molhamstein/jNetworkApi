@@ -9,7 +9,7 @@ module.exports = function(Campaignad) {
     			  return cb(ERROR(404,'client not found'));
 
           var clientAge = new Date().getFullYear() - new Date(client.birthdate).getFullYear();
-          console.log(clientAge)
+          // console.log(clientAge)
       		var sql = "SELECT campaign.id as CID, campaign.status, campaign.start, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id order by campaign_id"
       		Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
@@ -64,12 +64,20 @@ module.exports = function(Campaignad) {
                 }
               }
             });
-            console.log("result campaigns : ",campaigns)
+            // console.log("result campaigns : ",campaigns)
+            var allowCampign = [];
             _.each(campaigns,(value,key)=>{
-              if(value == -1)
-                delete campaigns[key];
-            })
-            console.log("allowe campaigns : ",campaigns)
+              if(value != -1)
+                allowCampign.push({id : key, value : value+1});
+            });
+            var campignId = _rouletteWheelSelection(allowCampign).id;
+            // console.log(campignId)
+            var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN ad ON ad.id = campignAD.ad_id';
+            Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
+              if(err) 
+                return cb(err);
+              return cb(null,data);
+            });
   		    });    
         });
     }
@@ -82,4 +90,18 @@ module.exports = function(Campaignad) {
     	if(mobile) 
     		return Campaignad.app.models.client.findOne({where : {mobile : mobile}},cb);
     }
+
+    function _rouletteWheelSelection(objects, fAttr = 'value'){ // object = { attr1: xx1, attr2, xx2 }
+      var totalFitness = 0;
+      objects.forEach(function(object){ totalFitness += object[fAttr]; });
+      var seed = Math.floor(Math.random() * totalFitness);
+      for(var i = 0; i < objects.length; ++i){
+        var object = objects[i];
+        var rate = object[fAttr];
+        if (seed < rate) return object;
+        seed -= rate;
+      }
+    }
 };
+
+

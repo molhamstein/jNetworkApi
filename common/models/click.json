@@ -7,28 +7,31 @@
     "validateUpsert": true
   },
   "properties": {
-    "ad_id": {
-      "type": "number",
-      "required": true
-    },
-    "campaign_id": {
-      "type": "number",
-      "required": false
-    },
-    "client_id": {
-      "type": "number",
-      "required": true
-    },
     "creation_date": {
       "type": "string"
     }
   },
   "validations": [],
   "relations": {
+    "ad": {
+      "type": "belongsTo",
+      "model": "AD",
+      "foreignKey" : "ad_id"
+    },
     "location": {
       "type": "belongsTo",
       "model": "locations",
       "foreignKey" : "location_id"
+    },
+    "campaign": {
+      "type": "belongsTo",
+      "model": "campaign",
+      "foreignKey" : "campaign_id"
+    },
+    "client": {
+      "type": "belongsTo",
+      "model": "client",
+      "foreignKey" : "client_id"
     }
   },
   "acls": [],

@@ -236,9 +236,22 @@ module.exports = function(Client) {
     	description: 'send message to user',
 		accepts: [
 			{arg: 'mobile', type: 'string', required: true, http: {source: 'form'}},
-			{arg: 'message', type: 'string', required: true, http: {source: 'format'}},
+			{arg: 'message', type: 'string', required: true, http: {source: 'form'}},
 		],
 		returns: {arg: 'message', type: 'string'},
 		http: {verb: 'post',path: '/customSms'},
+    });
+
+    Client.onlineUsers = function(location,cb){
+    	
+    };
+
+    Client.remoteMethod('onlineUsers', {
+    	description: 'get all online users ',
+		accepts: [
+			{arg: 'location', type: 'string', http: {source: 'query'}},
+		],
+		returns:{arg: 'users', type: 'array', root : true},
+		http: {verb: 'get',path: '/onlineUsers'},
     });
 };
