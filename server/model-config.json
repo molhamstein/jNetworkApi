@@ -76,5 +76,9 @@
   "locations": {
     "dataSource": "mydb",
     "public": true
+  },
+  "criteria_price": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

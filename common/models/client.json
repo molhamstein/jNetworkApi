@@ -121,6 +121,13 @@
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "customSms"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "onlineUsers"
     }
   ],
   "methods": {

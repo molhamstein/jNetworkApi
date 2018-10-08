@@ -28,7 +28,7 @@
     "location": {
       "type": "belongsTo",
       "model": "locations",
-      "foreignKey" : "location_id"
+      "foreignKey": "location_id"
     }
   },
   "acls": [],

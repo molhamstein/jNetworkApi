@@ -1,6 +1,5 @@
 {
-  "name": "criteria",
-  "plural": "criterias",
+  "name": "criteria_price",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -9,23 +8,17 @@
   "properties": {
     "type": {
       "type": "string",
-      "default": "gender"
-    },
-    "operator": {
-      "type": "string",
-      "required": true,
-      "default": "="
-    },
-    "value": {
-      "type": "string",
       "required": true
     },
-    "value2": {
-      "type": "string"
-    },
-    "campaign_id": {
+    "perClick": {
       "type": "number",
-      "required": true
+      "required": true,
+      "default": 0
+    },
+    "perImp": {
+      "type": "number",
+      "required": true,
+      "default": 0
     }
   },
   "validations": [],

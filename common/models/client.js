@@ -243,7 +243,16 @@ module.exports = function(Client) {
     });
 
     Client.onlineUsers = function(location,cb){
-    	
+    	var sql = "SELECT * FROM radacct WHERE acctstoptime IS NULL OR acctstoptime = ''";
+    	if(location)
+    		sql = "SELECT * FROM radacct WHERE calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = '')";
+
+    	connector.execute(sql,[],function(err,users){
+    		if(err)
+    			return cb(err);
+    		return cb(null,users);
+
+    	})
     };
 
     Client.remoteMethod('onlineUsers', {

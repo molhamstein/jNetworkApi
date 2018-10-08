@@ -10,7 +10,7 @@ module.exports = function(Campaignad) {
 
           var clientAge = new Date().getFullYear() - new Date(client.birthdate).getFullYear();
           // console.log(clientAge)
-      		var sql = "SELECT campaign.id as CID, campaign.status, campaign.start, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id order by campaign_id"
+      		var sql = "SELECT campaign.id as CID, campaign.status, campaign.expiration_date, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id  WHERE (expiration_date <= CURDATE() ) order by campaign_id "
       		Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
               return cb(err);
@@ -76,7 +76,15 @@ module.exports = function(Campaignad) {
             Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
               if(err) 
                 return cb(err);
-              return cb(null,data);
+
+              _addImpression(campignId,data,client_id,location_id,(err)=>{
+                if(err){
+                  
+                  console.log(err);
+                  return cb(err);
+                }
+                return cb(null,data);
+              })
             });
   		    });    
         });
@@ -101,6 +109,23 @@ module.exports = function(Campaignad) {
         if (seed < rate) return object;
         seed -= rate;
       }
+    }
+
+    function _addImpression(campaign_id,ads,client_id,location_id,cb){
+      var data = [];
+      _.each(ads,(ad)=>{
+        data.push({
+          client_id : client_id,
+          ad_id : ad.id,
+          campaign_id : campaign_id,
+          location_id : location_id || 0
+        });
+      });
+      Campaignad.app.models.impression.create(data,function(err,result){
+        if(err)
+          return cb(err);
+        return cb(null);
+      })
     }
 };
 

@@ -20,8 +20,9 @@
     "CPC": {
       "type": "string"
     },
-    "start": {
-      "type": "date"
+    "expiration_date": {
+      "type": "date",
+      "required": true
     },
     "duration": {
       "type": "number"
@@ -29,10 +30,10 @@
     "partner_id": {
       "type": "number"
     },
-    "value": {
+    "target": {
       "type": "number"
     },
-    "completed_precentage": {
+    "completed": {
       "type": "number"
     },
     "status": {

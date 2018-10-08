@@ -16,22 +16,22 @@
     "ad": {
       "type": "belongsTo",
       "model": "AD",
-      "foreignKey" : "ad_id"
+      "foreignKey": "ad_id"
     },
     "location": {
       "type": "belongsTo",
       "model": "locations",
-      "foreignKey" : "location_id"
+      "foreignKey": "location_id"
     },
     "campaign": {
       "type": "belongsTo",
       "model": "campaign",
-      "foreignKey" : "campaign_id"
+      "foreignKey": "campaign_id"
     },
     "client": {
       "type": "belongsTo",
       "model": "client",
-      "foreignKey" : "client_id"
+      "foreignKey": "client_id"
     }
   },
   "acls": [],
