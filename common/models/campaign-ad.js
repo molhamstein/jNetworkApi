@@ -70,6 +70,9 @@ module.exports = function(Campaignad) {
               if(value != -1)
                 allowCampign.push({id : key, value : value+1});
             });
+              var cam = _rouletteWheelSelection(allowCampign)
+            if(!cam)
+              return cb(null,[])
             var campignId = _rouletteWheelSelection(allowCampign).id;
             // console.log(campignId)
             var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN ad ON ad.id = campignAD.ad_id';
