@@ -1,0 +1,27 @@
+{
+  "name": "payments",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "value": {
+      "type": "number",
+      "required": true
+    },
+    "creation_date": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "partner": {
+      "type": "belongsTo",
+      "model": "partner",
+      "foreignKey": "partner_id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

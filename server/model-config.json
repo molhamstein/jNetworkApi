@@ -80,5 +80,9 @@
   "criteria_price": {
     "dataSource": "mydb",
     "public": true
+  },
+  "payments": {
+    "dataSource": "mydb",
+    "public": true
   }
 }
