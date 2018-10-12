@@ -10,11 +10,10 @@ module.exports = function(Campaignad) {
 
           var clientAge = new Date().getFullYear() - new Date(client.birthdate).getFullYear();
           // console.log(clientAge)
-          var sql = "SELECT campaign.id as CID, campaign.status, campaign.expiration_date, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id  WHERE (expiration_date >= CURDATE() AND completed < target ) order by campaign_id "
+          var sql = "SELECT campaign.id as CID, campaign.status, campaign.expiration_date, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id  WHERE (start <= CURDATE() AND expiration_date >= CURDATE() AND completed < target ) order by campaign_id "
           Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
               return cb(err);
-            console.log(data)
             var campaigns = {}
             // console.log(data);
             _.each(data,function(CA){

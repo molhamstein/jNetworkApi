@@ -24,6 +24,10 @@
       "type": "date",
       "required": true
     },
+    "start": {
+      "type": "date",
+      "required": true
+    },
     "duration": {
       "type": "number"
     },
