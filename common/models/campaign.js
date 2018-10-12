@@ -65,6 +65,39 @@ module.exports = function(Campaign) {
         });
     });
 
+    Campaign.costCampaign = function(campaignId,res,cb){
+        Campaign.findById(campaignId,function(err,campaign){
+            if(err) 
+                return cb(err);
+            if(!campaign)
+                return cb(ERROR(404,'campaign not found'));
+            Campaign.app.models.click.count({campaign_id : campaignId}, function(err, countClick) {
+                if(err) 
+                    return cb(err);
+                Campaign.app.models.impression.count({campaign_id : campaignId}, function(err, countImp) {
+                    if(err) 
+                        return cb(err);
+                    return res.json({
+                        countClick : countClick,
+                        countImp : countImp,
+                        CPC : campaign.CPC,
+                        CPI : campaign.CPI,
+                        cost : campaign.CPC*countClick + campaign.CPI* countImp
+                    });
+                });
+            });
+        });
+    }
+    Campaign.remoteMethod('costCampaign', {
+        description: '',
+        accepts: [
+            {arg: 'campaignId', type: 'number',  required:true},
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/:campaignId/cost'},
+    });
+
+
     Campaign.states = function(partner_id,cb) {
         var CampaignM = app.models.Campaign;
         var current_progress=[];
