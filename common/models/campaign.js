@@ -1,9 +1,57 @@
 'use strict';
 var app = require('../../server/server');
+var _ = require('lodash');
 const connector = app.dataSources.mydb.connector;
 module.exports = function(Campaign) {
+
+    Campaign.beforeRemote('create', function( ctx, modelInstance, next) {
+        ctx.req.criteria = ctx.req.body.criteria;
+        delete ctx.req.body.criteria;
+        return next();
+    });
+
+    Campaign.afterRemote('create', function(context, campaign, next) {
+        var criteria = [];
+        var criteriaPrice = {};
+        var totalPricePerImp = 0;
+        var totalPricePerClick = 0;
+
+        Campaign.app.models.criteria_price.find({},function(err,prices){
+            if(err)
+                return next(err);
+            _.each(prices,(p)=>{
+                criteriaPrice[p.type] = {
+                    perImp : p.perImp,
+                    perClick : p.perClick
+                }
+            });
+            totalPricePerClick += Number(criteriaPrice.default.perClick);
+            totalPricePerImp += Number(criteriaPrice.default.perImp);
+            _.each(context.req.criteria,function(c){
+                if(criteriaPrice[c.type]){
+                    totalPricePerImp += Number(criteriaPrice[c.type].perImp);
+                    totalPricePerClick += Number(criteriaPrice[c.type].perClick);
+                    c.campaign_id = campaign.id;
+                    criteria.push(c);
+                }
+            });
+            campaign.CPC = totalPricePerClick;
+            campaign.CPI = totalPricePerImp;
+            campaign.save(function(err){
+                if(err)
+                    return next(err);
+                Campaign.app.models.criteria.create(criteria,(err,data)=>{
+                    if(err)
+                        return next(err);
+                    campaign.criteria = data;
+                    return next();
+                });
+            });
+        });
+    });
+
     Campaign.states = function(partner_id,cb) {
-		var CampaignM = app.models.Campaign;
+        var CampaignM = app.models.Campaign;
         var current_progress=[];
         var campaign_clicks =[];
         var campaign_impressions=[];
