@@ -41,7 +41,8 @@
       "type": "number"
     },
     "status": {
-      "type": "string"
+      "type": "string",
+      "default" : "pending"
     }
   },
   "validations": [],

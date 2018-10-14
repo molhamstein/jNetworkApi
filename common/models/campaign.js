@@ -3,6 +3,7 @@ var app = require('../../server/server');
 var _ = require('lodash');
 const connector = app.dataSources.mydb.connector;
 module.exports = function(Campaign) {
+    Campaign.validatesInclusionOf('status', {in: ['pending', 'active','paused','deactivated']});
 
     Campaign.beforeRemote('create', function( ctx, modelInstance, next) {
         ctx.req.criteria = ctx.req.body.criteria;
@@ -95,6 +96,49 @@ module.exports = function(Campaign) {
             {arg: 'res', type: 'object', http:{source:'res'}},
         ],
         http: {verb: 'get',path: '/:campaignId/cost'},
+    });
+
+
+    Campaign.graphStates = function(campaignId,locationId,startDate,endDate,res,cb){
+        var where = [];
+        if(campaignId) where.push(' campaign_id = '+campaignId);
+        if(locationId) where.push(' location_id = '+locationId);
+        if(startDate) where.push(' creation_date >= \''+startDate+'\'');
+        if(endDate) where.push(' creation_date <= \''+endDate+'\'');
+
+        if(where.length > 0)
+            where = where.join(' AND ');
+        if(where != "")
+            where = " WHERE " + where; 
+        var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM impression "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
+        connector.execute(sql,null,(err,impressions)=>{
+            if(err)
+                return cb(err);
+        var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM click "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
+            connector.execute(sql,null,(err,clicks)=>{
+                if(err)
+                    return cb(err);
+                return res.json([{
+                   name : 'clicks',
+                   series : clicks 
+                },{
+                    name : 'impressions',
+                    series : impressions,
+                }]);
+            });
+
+        });
+    }
+    Campaign.remoteMethod('graphStates', {
+        description: '',
+        accepts: [
+            {arg: 'campaignId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'locationId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'startDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'endDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/graphStates'},
     });
 
 
