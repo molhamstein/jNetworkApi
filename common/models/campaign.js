@@ -141,6 +141,90 @@ module.exports = function(Campaign) {
         http: {verb: 'get',path: '/graphStates'},
     });
 
+    Campaign.locationStates = function(campaignId,locationId,startDate,endDate,res,cb){
+        var where = [];
+        if(campaignId) where.push(' campaign_id = '+campaignId);
+        if(locationId) where.push(' location_id = '+locationId);
+        if(startDate) where.push(' creation_date >= \''+startDate+'\'');
+        if(endDate) where.push(' creation_date <= \''+endDate+'\'');
+
+        if(where.length > 0)
+            where = where.join(' AND ');
+        if(where != "")
+            where = " WHERE " + where; 
+        var sql = "SELECT location_id AS 'key',name,lat,lng,routerName,count(*) AS value FROM impression  INNER JOIN locations ON impression.location_id = locations.id "+ where +" GROUP BY location_id"
+        connector.execute(sql,null,(err,impressions)=>{
+            if(err)
+                return cb(err);
+        var sql = "SELECT location_id AS 'key',name,lat,lng,routerName,count(*) AS value FROM click  INNER JOIN locations ON click.location_id = locations.id "+ where +" GROUP BY location_id"
+            connector.execute(sql,null,(err,clicks)=>{
+                if(err)
+                    return cb(err);
+                return res.json([{
+                   name : 'clicks',
+                   series : clicks 
+                },{
+                    name : 'impressions',
+                    series : impressions,
+                }]);
+            });
+
+        });
+    }
+    Campaign.remoteMethod('locationStates', {
+        description: '',
+        accepts: [
+            {arg: 'campaignId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'locationId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'startDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'endDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/locationStates'},
+    });
+
+    Campaign.genderStates = function(campaignId,locationId,startDate,endDate,res,cb){
+        var where = [];
+        if(campaignId) where.push(' campaign_id = '+campaignId);
+        if(locationId) where.push(' location_id = '+locationId);
+        if(startDate) where.push(' creation_date >= \''+startDate+'\'');
+        if(endDate) where.push(' creation_date <= \''+endDate+'\'');
+
+        if(where.length > 0)
+            where = where.join(' AND ');
+        if(where != "")
+            where = " WHERE " + where; 
+        var sql = "SELECT gender AS 'key',count(*) AS value FROM impression  INNER JOIN client ON impression.client_id = client.id "+ where +" GROUP BY gender"
+        connector.execute(sql,null,(err,impressions)=>{
+            if(err)
+                return cb(err);
+            var sql = "SELECT gender AS 'key',count(*) AS value FROM click  INNER JOIN client ON click.client_id = client.id "+ where +" GROUP BY gender"
+            connector.execute(sql,null,(err,clicks)=>{
+                if(err)
+                    return cb(err);
+                return res.json([{
+                   name : 'clicks',
+                   series : clicks 
+                },{
+                    name : 'impressions',
+                    series : impressions,
+                }]);
+            });
+
+        });
+    }
+    Campaign.remoteMethod('genderStates', {
+        description: '',
+        accepts: [
+            {arg: 'campaignId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'locationId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'startDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'endDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/genderStates'},
+    });
+
 
     Campaign.states = function(partner_id,cb) {
         var CampaignM = app.models.Campaign;
