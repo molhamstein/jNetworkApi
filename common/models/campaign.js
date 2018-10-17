@@ -141,6 +141,50 @@ module.exports = function(Campaign) {
         http: {verb: 'get',path: '/graphStates'},
     });
 
+    Campaign.overAllStates = function(campaignId,locationId,startDate,endDate,res,cb){
+        var where = {};
+        if(campaignId) where.campaign_id =campaignId;
+        if(locationId) where.location_id = locationId;
+        if(startDate) where.creation_date = {gte : startDate};
+        if(endDate) where.creation_date = {lte : endDate};
+
+        Campaign.findById(campaignId,function(err,campaign){
+            if(err) 
+                return cb(err);
+            if(!campaign)
+                return cb(ERROR(404,'campaign not found'));
+            Campaign.app.models.click.find({where : where,fields : {client_id : true}}, function(err, allClicks) {
+                if(err) 
+                    return cb(err);
+                Campaign.app.models.impression.find({where : where,fields : {client_id : true}}, function(err, allImpressions) {
+                    if(err) 
+                        return cb(err);
+                    var uniqeUsers = {};
+                    _.each(allClicks,(c)=>{uniqeUsers[c.client_id] = true;});
+                    _.each(allImpressions,(c)=>{uniqeUsers[c.client_id] = true;});
+
+                    return res.json({
+                        clicks : allClicks.length,
+                        impressions : allImpressions.length,
+                        usersReached : Object.keys(uniqeUsers).length,
+                        cost : campaign.CPC*allClicks.length + campaign.CPI* allImpressions.length
+                    });
+                });
+            });
+        });
+    }
+    Campaign.remoteMethod('overAllStates', {
+        description: '',
+        accepts: [
+            {arg: 'campaignId', type: 'number',required : true, "http": {"source": "query"}},
+            {arg: 'locationId', type: 'number',  "http": {"source": "query"}},
+            {arg: 'startDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'endDate', type: 'string',  "http": {"source": "query"}},
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/overAllStates'},
+    });
+
     Campaign.locationStates = function(campaignId,locationId,startDate,endDate,res,cb){
         var where = [];
         if(campaignId) where.push(' campaign_id = '+campaignId);
