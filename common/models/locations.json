@@ -13,6 +13,15 @@
     "name": {
       "type": "string",
       "required": true
+    },
+    "lat": {
+      "type" : "number"
+    },
+    "lng": {
+      "type" : "number"
+    },
+    "ip": {
+      "type" : "string"
     }
   },
   "validations": [],

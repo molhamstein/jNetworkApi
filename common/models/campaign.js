@@ -185,6 +185,46 @@ module.exports = function(Campaign) {
         http: {verb: 'get',path: '/overAllStates'},
     });
 
+    Campaign.actionStates = function(res,cb){
+        Campaign.app.models.click.count({}, function(err, countAllClicks) {
+            if(err) 
+                return cb(err);
+            Campaign.app.models.impression.count({}, function(err, countAllImpressions) {
+                if(err) 
+                    return cb(err);
+
+                var sql = "SELECT count(*) AS value FROM impression WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                connector.execute(sql,null,function(err,countImpressionInDay){
+                    if(err) 
+                        return cb(err);
+                var sql = "SELECT count(*) AS value FROM click WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                    connector.execute(sql,null,function(err,countClickInDay){
+                        if(err) 
+                            return cb(err);
+                        
+                        return res.json({
+                            clicks : {
+                                all : countAllClicks,
+                                day : countClickInDay[0].value
+                            },
+                            impressions : {
+                                all : countAllImpressions,
+                                day : countImpressionInDay[0].value
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    }
+    Campaign.remoteMethod('actionStates', {
+        description: '',
+        accepts: [
+            {arg: 'res', type: 'object', http:{source:'res'}},
+        ],
+        http: {verb: 'get',path: '/actionStates'},
+    });
+
     Campaign.locationStates = function(campaignId,locationId,startDate,endDate,res,cb){
         var where = [];
         if(campaignId) where.push(' campaign_id = '+campaignId);
