@@ -43,7 +43,7 @@ module.exports = function(Client) {
     });
   Client.afterRemote('create', function(context, client, next) {
     console.log('> user.afterRemote triggered');
-	 var code = speakeasy.totp({key: 'APP_SECRET' + client.email});
+	 var code = speakeasy.totp({key: 'APP_SECRET' + client.mobile});
           console.log('Two factor code for ' + client.email + ': ' + code);
 			client.updateAttributes({ verificationToken: code, emailVerified: false }, function(err) {
 				  if (err) {
