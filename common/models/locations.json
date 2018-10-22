@@ -14,6 +14,12 @@
       "type": "string",
       "required": true
     },
+    "routerName": {
+      "type": "string"
+    },
+    "dailyLimit":{
+      "type" : "number"
+    },
     "lat": {
       "type" : "number"
     },
