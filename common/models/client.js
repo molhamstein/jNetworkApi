@@ -243,9 +243,10 @@ module.exports = function(Client) {
     });
 
     Client.onlineUsers = function(location,cb){
-    	var sql = "SELECT * FROM radacct WHERE acctstoptime IS NULL OR acctstoptime = ''";
+    	var sql = "SELECT * FROM (SELECT * FROM radacct WHERE (acctstoptime IS NULL OR acctstoptime = '')) AS  A JOIN client ON client.mobile = A.username";
     	if(location)
-    		sql = "SELECT * FROM radacct WHERE calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = '')";
+    		sql = "SELECT * FROM (SELECT * FROM radacct WHERE (calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = ''))) AS  A JOIN client ON client.mobile = A.username"
+    		// sql = "SELECT * FROM radacct WHERE calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = '')";
 
     	connector.execute(sql,[],function(err,users){
     		if(err)
