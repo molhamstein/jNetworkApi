@@ -50,7 +50,7 @@
         "type": "hasMany", 
         "mode": "Role",
         "foreignKey": "principalId",
-        "through": "RoleMapping"
+        "through": "rolemapping"
 
     }
   },
