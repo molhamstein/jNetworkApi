@@ -40,6 +40,13 @@
       "type": "hasMany",
       "model": "campaign",
       "foreignKey": "partner_id"
+    },
+    "roles": {
+        "type": "hasMany", 
+        "mode": "Role",
+        "foreignKey": "principalId",
+        "through": "RoleMapping"
+
     }
   },
   "acls": [
