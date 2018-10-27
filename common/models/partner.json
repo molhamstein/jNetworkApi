@@ -48,7 +48,7 @@
     },
     "roles": {
         "type": "hasMany", 
-        "mode": "Role",
+        "mode": "role",
         "foreignKey": "principalId",
         "through": "rolemapping"
 
