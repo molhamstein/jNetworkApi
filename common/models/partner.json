@@ -6,6 +6,11 @@
   "options": {
     "validateUpsert": true
   },
+  "scope": {
+    "include": [
+      "roles"
+    ]
+  },
   "properties": {
     "fullname": {
       "type": "string",
