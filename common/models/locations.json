@@ -17,17 +17,17 @@
     "routerName": {
       "type": "string"
     },
-    "dailyLimit":{
-      "type" : "number"
+    "dailyLimit": {
+      "type": "number"
     },
     "lat": {
-      "type" : "number"
+      "type": "number"
     },
     "lng": {
-      "type" : "number"
+      "type": "number"
     },
     "ip": {
-      "type" : "string"
+      "type": "string"
     }
   },
   "validations": [],

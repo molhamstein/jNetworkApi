@@ -84,5 +84,13 @@
   "payments": {
     "dataSource": "mydb",
     "public": true
+  },
+  "role": {
+    "dataSource": "mydb",
+    "public": false
+  },
+  "rolemapping": {
+    "dataSource": "mydb",
+    "public": false
   }
 }

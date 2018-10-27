@@ -42,7 +42,7 @@
     },
     "status": {
       "type": "string",
-      "default" : "pending"
+      "default": "pending"
     }
   },
   "validations": [],
