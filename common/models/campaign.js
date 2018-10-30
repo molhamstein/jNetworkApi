@@ -236,7 +236,7 @@ module.exports = function(Campaign) {
             where = where.join(' AND ');
         if(where != "")
             where = " WHERE " + where; 
-        var sql = "SELECT location_id AS 'key',name,lat,lng,routerName,count(*) AS value FROM impression  INNER JOIN locations ON impression.location_id = locations.id "+ where +" GROUP BY location_id"
+        var sql = "SELECT location_id AS 'key',name,lat, lng,routerName,count(*) AS value FROM impression  INNER JOIN locations ON impression.location_id = locations.id "+ where +" GROUP BY location_id"
         connector.execute(sql,null,(err,impressions)=>{
             if(err)
                 return cb(err);
@@ -330,6 +330,9 @@ module.exports = function(Campaign) {
             
             var result = [];
             var i=1;
+
+            if(!campaignes.length)
+                return cb(null,result)
             campaignes.forEach(campaign => {
                
                // console.log("campaign is "+campaign.name)
@@ -339,50 +342,65 @@ module.exports = function(Campaign) {
                     if(!err){
                         campaign_clicks[campaign.id] = resultObjects[0].clicks_count;
                         console.log("campaign_clicks "+campaign_clicks[campaign.id]+" for id "+campaign.id)
-                        sql ="select count(*) as impressions_count from impression where campaign_id='"+campaign.id+"'";
-                        connector.execute(sql, null, (err, resultObjects) => {
-                            if(!err){
-                                campaign_impressions = resultObjects[0].impressions_count; 
-                                //console.log("campaign_clicks2 "+campaign_clicks[campaign.id]+" for id "+campaign.id)
-                                console.log("campaign_impression "+campaign_impressions) 
-                                current_progress =0;
-                                //console.log()
-                                if(campaign.type=="clicks")
-                                {
-                                    current_progress = 100*campaign_clicks[campaign.id]/campaign.value;
-                                }
-                                else if(campaign.type=="impressions")
-                                {
-                                    current_progress = 100*campaign_impressions/campaign.value;
-                                }
-                                if(campaign.duration!=0 && campaign.duration!=null && campaign.duration!="")
-                                {
-                                    var dt1 = new Date(campaign.start);
-                                    //console.log(dt1);
-                                    var dt2 = new Date();
-                                    var current_duration = Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
-                                    var p_duration  =current_duration*100/campaign.duration;
-                                    if(p_duration > current_progress)
-                                        current_progress = p_duration
-                                }
-                                var obj  ={};
-                                obj.campaign = campaign
-                                obj.current_progress = current_progress
-                                obj.clicks= campaign_clicks[campaign.id];
-                                obj.impressions = campaign_impressions;
-                                result.push(obj);
-                            }
-                            else
-                                    process.nextTick(function() {
-                                    cb(err, null);
-                                    });
-                            if(i == campaignes.length)
-                                process.nextTick(function() {
-                                    cb(err, result);
+                        sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY location_id) AS a"
+                        connector.execute(sql, null, (err, countLocations) => {
+                            if(err)
+                                return cb(err);
+                            sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY client_id) AS a"
+                            connector.execute(sql, null, (err, countUsers) => {
+                                if(err)
+                                    return cb(err);
+
+                                sql ="select count(*) as impressions_count from impression where campaign_id='"+campaign.id+"'";
+                                connector.execute(sql, null, (err, resultObjects) => {
+                                    if(!err){
+                                        campaign_impressions = resultObjects[0].impressions_count; 
+                                        //console.log("campaign_clicks2 "+campaign_clicks[campaign.id]+" for id "+campaign.id)
+                                        console.log("campaign_impression "+campaign_impressions) 
+                                        current_progress =0;
+                                        //console.log()
+                                        if(campaign.type=="clicks")
+                                        {
+                                            current_progress = 100*campaign_clicks[campaign.id]/campaign.value;
+                                        }
+                                        else if(campaign.type=="impressions")
+                                        {
+                                            current_progress = 100*campaign_impressions/campaign.value;
+                                        }
+                                        if(campaign.duration!=0 && campaign.duration!=null && campaign.duration!="")
+                                        {
+                                            var dt1 = new Date(campaign.start);
+                                            //console.log(dt1);
+                                            var dt2 = new Date();
+                                            var current_duration = Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
+                                            var p_duration  =current_duration*100/campaign.duration;
+                                            if(p_duration > current_progress)
+                                                current_progress = p_duration
+                                        }
+                                        var obj  ={};
+                                        obj.campaign = campaign
+                                        obj.current_progress = current_progress
+                                        obj.clicks= campaign_clicks[campaign.id];
+                                        obj.impressions = campaign_impressions;
+                                        obj.countLocations = countLocations[0].value;
+                                        obj.countUsers = countUsers[0].value;
+                                        result.push(obj);
+                                    }
+                                    else
+                                            process.nextTick(function() {
+                                            cb(err, null);
+                                            });
+                                    if(i == campaignes.length)
+                                        process.nextTick(function() {
+                                            cb(err, result);
+                                        });
+                                    else
+                                        i++
+                                    
                                 });
-                            else
-                                i++
-                            
+                            });
+
+
                         });
                     }
                     else
