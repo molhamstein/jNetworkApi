@@ -75,7 +75,7 @@ module.exports = function(Campaignad) {
               return cb(null,[])
             var campignId = _rouletteWheelSelection(allowCampign).id;
             // console.log(campignId)
-            var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN ad ON ad.id = campignAD.ad_id';
+            var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN AD ON AD.id = campignAD.ad_id';
             Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
               if(err) 
                 return cb(err);
