@@ -9,7 +9,8 @@
     "username": "root",
     "password": "jihad_lts",
     "name": "mydb",
-    "connector": "mysql"
+    "connector": "mysql",
+    "allowExtendedOperators": true
   },
   "storage": {
     "name": "storage",

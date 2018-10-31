@@ -77,6 +77,13 @@
     "states": {
       "accepts": [
         {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        },
+        {
           "arg": "partner_id",
           "type": "number",
           "required": false,

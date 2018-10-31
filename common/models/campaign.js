@@ -5,6 +5,20 @@ const connector = app.dataSources.mydb.connector;
 module.exports = function(Campaign) {
     Campaign.validatesInclusionOf('status', {in: ['pending', 'active','paused','deactivated']});
 
+    Campaign.beforeRemote('find', function( ctx, modelInstance, next) {
+        Campaign.app.models.partner.isAdmin(ctx.req.accessToken,function(err,isAdmin){
+            if(err)
+                return next(err);
+            if(!isAdmin){
+                if(!ctx.args.filter)
+                    ctx.args.filter = {};
+                _.set(ctx.args.filter, 'where.partner_id', ctx.req.accessToken.userId);
+
+            }
+            return next();
+        });
+    });
+
     Campaign.beforeRemote('create', function( ctx, modelInstance, next) {
         ctx.req.criteria = ctx.req.body.criteria;
         ctx.req.adsIds = ctx.req.body.adsIds;
@@ -99,39 +113,52 @@ module.exports = function(Campaign) {
     });
 
 
-    Campaign.graphStates = function(campaignId,locationId,startDate,endDate,res,cb){
-        var where = [];
-        if(campaignId) where.push(' campaign_id = '+campaignId);
-        if(locationId) where.push(' location_id = '+locationId);
-        if(startDate) where.push(' creation_date >= \''+startDate+'\'');
-        if(endDate) where.push(' creation_date <= \''+endDate+'\'');
-
-        if(where.length > 0)
-            where = where.join(' AND ');
-        if(where != "")
-            where = " WHERE " + where; 
-        var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM impression "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
-        connector.execute(sql,null,(err,impressions)=>{
+    Campaign.graphStates = function(req,campaignId,locationId,startDate,endDate,res,cb){
+        Campaign.app.models.partner.isAdmin(req.accessToken,{getCampaignIds :true},function(err,isAdmin,ids){
             if(err)
                 return cb(err);
-        var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM click "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
-            connector.execute(sql,null,(err,clicks)=>{
+
+            if(campaignId && !isAdmin && _.indexOf(ids, campaignId) == -1)
+                return cb(ERROR(403,'permison denied'));
+
+        
+            var where = [];
+            if(campaignId) where.push(' campaign_id = '+campaignId);
+            else if(!isAdmin){
+                where.push(' campaign_id IN ('+ids+')');
+            }
+            if(locationId) where.push(' location_id = '+locationId);
+            if(startDate) where.push(' creation_date >= \''+startDate+'\'');
+            if(endDate) where.push(' creation_date <= \''+endDate+'\'');
+
+            if(where.length > 0)
+                where = where.join(' AND ');
+            if(where != "")
+                where = " WHERE " + where; 
+            var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM impression "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
+            connector.execute(sql,null,(err,impressions)=>{
                 if(err)
                     return cb(err);
-                return res.json([{
-                   name : 'clicks',
-                   series : clicks 
-                },{
-                    name : 'impressions',
-                    series : impressions,
-                }]);
-            });
+            var sql  = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM click "+where+" GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
+                connector.execute(sql,null,(err,clicks)=>{
+                    if(err)
+                        return cb(err);
+                    return res.json([{
+                       name : 'clicks',
+                       series : clicks 
+                    },{
+                        name : 'impressions',
+                        series : impressions,
+                    }]);
+                });
 
+            });
         });
     }
     Campaign.remoteMethod('graphStates', {
         description: '',
         accepts: [
+            {arg: 'req', type: 'object', http:{source:'req'}},
             {arg: 'campaignId', type: 'number',  "http": {"source": "query"}},
             {arg: 'locationId', type: 'number',  "http": {"source": "query"}},
             {arg: 'startDate', type: 'string',  "http": {"source": "query"}},
@@ -185,32 +212,40 @@ module.exports = function(Campaign) {
         http: {verb: 'get',path: '/overAllStates'},
     });
 
-    Campaign.actionStates = function(res,cb){
-        Campaign.app.models.click.count({}, function(err, countAllClicks) {
-            if(err) 
+    Campaign.actionStates = function(req,res,cb){
+        Campaign.app.models.partner.isAdmin(req.accessToken,{getCampaignIds :true},function(err,isAdmin,ids){
+            if(err)
                 return cb(err);
-            Campaign.app.models.impression.count({}, function(err, countAllImpressions) {
+            var where = {}
+            if(!isAdmin){
+                where = {campaign_id : {inq : ids}}
+            }
+            Campaign.app.models.click.count(where, function(err, countAllClicks) {
                 if(err) 
                     return cb(err);
-
-                var sql = "SELECT count(*) AS value FROM impression WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
-                connector.execute(sql,null,function(err,countImpressionInDay){
+                Campaign.app.models.impression.count(where, function(err, countAllImpressions) {
                     if(err) 
                         return cb(err);
-                var sql = "SELECT count(*) AS value FROM click WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
-                    connector.execute(sql,null,function(err,countClickInDay){
+
+                    var sql = "SELECT count(*) AS value FROM impression WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                    connector.execute(sql,null,function(err,countImpressionInDay){
                         if(err) 
                             return cb(err);
-                        
-                        return res.json({
-                            clicks : {
-                                all : countAllClicks,
-                                day : countClickInDay[0].value
-                            },
-                            impressions : {
-                                all : countAllImpressions,
-                                day : countImpressionInDay[0].value
-                            }
+                    var sql = "SELECT count(*) AS value FROM click WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                        connector.execute(sql,null,function(err,countClickInDay){
+                            if(err) 
+                                return cb(err);
+                            
+                            return res.json({
+                                clicks : {
+                                    all : countAllClicks,
+                                    day : countClickInDay[0].value
+                                },
+                                impressions : {
+                                    all : countAllImpressions,
+                                    day : countImpressionInDay[0].value
+                                }
+                            });
                         });
                     });
                 });
@@ -220,6 +255,7 @@ module.exports = function(Campaign) {
     Campaign.remoteMethod('actionStates', {
         description: '',
         accepts: [
+            {arg: 'req', type: 'object', http:{source:'req'}},
             {arg: 'res', type: 'object', http:{source:'res'}},
         ],
         http: {verb: 'get',path: '/actionStates'},
@@ -310,110 +346,118 @@ module.exports = function(Campaign) {
     });
 
 
-    Campaign.states = function(partner_id,cb) {
+    Campaign.states = function(req,partner_id,cb) {
         var CampaignM = app.models.Campaign;
         var current_progress=[];
         var campaign_clicks =[];
         var campaign_impressions=[];
         //CampaignM.findOne({where: { status: 1 },order: 'RAND()'}, cb);
-        CampaignM.find( {where: { partner_id: partner_id} }, function(err, campaignes) {
-            // check for errors first...
-            if (err || campaignes==null) {
-                // handle the error somehow...
-                process.nextTick(function() {
-                    const err2 = new Error("Partner Not found");
-                    err2.statusCode = 604;
-                    err2.code = 'Partner_Not_Found';
-                    cb(err2, null);
-                    });
+        var where = { partner_id: partner_id};
+        Campaign.app.models.partner.isAdmin(req.accessToken,function(err,isAdmin){
+            if(err)
+                return cb(err);
+            if(!isAdmin){
+                where = {partner_id : req.accessToken.userId }
             }
-            
-            var result = [];
-            var i=1;
+            CampaignM.find({where:where}, function(err, campaignes) {
+                // check for errors first...
+                if (err || campaignes==null) {
+                    // handle the error somehow...
+                    process.nextTick(function() {
+                        const err2 = new Error("Partner Not found");
+                        err2.statusCode = 604;
+                        err2.code = 'Partner_Not_Found';
+                        cb(err2, null);
+                        });
+                }
+                
+                var result = [];
+                var i=1;
 
-            if(!campaignes.length)
-                return cb(null,result)
-            campaignes.forEach(campaign => {
-               
-               // console.log("campaign is "+campaign.name)
-                //var sql ="select count(*) as clicks_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
-                var sql ="select count(*) as clicks_count from  click  where campaign_id='"+campaign.id+"'";
-                connector.execute(sql, null, (err, resultObjects) => {
-                    if(!err){
-                        campaign_clicks[campaign.id] = resultObjects[0].clicks_count;
-                        console.log("campaign_clicks "+campaign_clicks[campaign.id]+" for id "+campaign.id)
-                        sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY location_id) AS a"
-                        connector.execute(sql, null, (err, countLocations) => {
-                            if(err)
-                                return cb(err);
-                            sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY client_id) AS a"
-                            connector.execute(sql, null, (err, countUsers) => {
+                if(!campaignes.length)
+                    return cb(null,result)
+                campaignes.forEach(campaign => {
+                   
+                   // console.log("campaign is "+campaign.name)
+                    //var sql ="select count(*) as clicks_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
+                    var sql ="select count(*) as clicks_count from  click  where campaign_id='"+campaign.id+"'";
+                    connector.execute(sql, null, (err, resultObjects) => {
+                        if(!err){
+                            campaign_clicks[campaign.id] = resultObjects[0].clicks_count;
+                            console.log("campaign_clicks "+campaign_clicks[campaign.id]+" for id "+campaign.id)
+                            sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY location_id) AS a"
+                            connector.execute(sql, null, (err, countLocations) => {
                                 if(err)
                                     return cb(err);
+                                sql = "SELECT count(*) AS value FROM (SELECT count(*) AS value FROM impression where campaign_id = "+campaign.id+" GROUP BY client_id) AS a"
+                                connector.execute(sql, null, (err, countUsers) => {
+                                    if(err)
+                                        return cb(err);
 
-                                sql ="select count(*) as impressions_count from impression where campaign_id='"+campaign.id+"'";
-                                connector.execute(sql, null, (err, resultObjects) => {
-                                    if(!err){
-                                        campaign_impressions = resultObjects[0].impressions_count; 
-                                        //console.log("campaign_clicks2 "+campaign_clicks[campaign.id]+" for id "+campaign.id)
-                                        console.log("campaign_impression "+campaign_impressions) 
-                                        current_progress =0;
-                                        //console.log()
-                                        if(campaign.type=="clicks")
-                                        {
-                                            current_progress = 100*campaign_clicks[campaign.id]/campaign.value;
+                                    sql ="select count(*) as impressions_count from impression where campaign_id='"+campaign.id+"'";
+                                    connector.execute(sql, null, (err, resultObjects) => {
+                                        if(!err){
+                                            campaign_impressions = resultObjects[0].impressions_count; 
+                                            //console.log("campaign_clicks2 "+campaign_clicks[campaign.id]+" for id "+campaign.id)
+                                            console.log("campaign_impression "+campaign_impressions) 
+                                            current_progress =0;
+                                            //console.log()
+                                            if(campaign.type=="clicks")
+                                            {
+                                                current_progress = 100*campaign_clicks[campaign.id]/campaign.value;
+                                            }
+                                            else if(campaign.type=="impressions")
+                                            {
+                                                current_progress = 100*campaign_impressions/campaign.value;
+                                            }
+                                            if(campaign.duration!=0 && campaign.duration!=null && campaign.duration!="")
+                                            {
+                                                var dt1 = new Date(campaign.start);
+                                                //console.log(dt1);
+                                                var dt2 = new Date();
+                                                var current_duration = Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
+                                                var p_duration  =current_duration*100/campaign.duration;
+                                                if(p_duration > current_progress)
+                                                    current_progress = p_duration
+                                            }
+                                            var obj  ={};
+                                            obj.campaign = campaign
+                                            obj.current_progress = current_progress
+                                            obj.clicks= campaign_clicks[campaign.id];
+                                            obj.impressions = campaign_impressions;
+                                            obj.countLocations = countLocations[0].value;
+                                            obj.countUsers = countUsers[0].value;
+                                            result.push(obj);
                                         }
-                                        else if(campaign.type=="impressions")
-                                        {
-                                            current_progress = 100*campaign_impressions/campaign.value;
-                                        }
-                                        if(campaign.duration!=0 && campaign.duration!=null && campaign.duration!="")
-                                        {
-                                            var dt1 = new Date(campaign.start);
-                                            //console.log(dt1);
-                                            var dt2 = new Date();
-                                            var current_duration = Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
-                                            var p_duration  =current_duration*100/campaign.duration;
-                                            if(p_duration > current_progress)
-                                                current_progress = p_duration
-                                        }
-                                        var obj  ={};
-                                        obj.campaign = campaign
-                                        obj.current_progress = current_progress
-                                        obj.clicks= campaign_clicks[campaign.id];
-                                        obj.impressions = campaign_impressions;
-                                        obj.countLocations = countLocations[0].value;
-                                        obj.countUsers = countUsers[0].value;
-                                        result.push(obj);
-                                    }
-                                    else
+                                        else
+                                                process.nextTick(function() {
+                                                cb(err, null);
+                                                });
+                                        if(i == campaignes.length)
                                             process.nextTick(function() {
-                                            cb(err, null);
+                                                cb(err, result);
                                             });
-                                    if(i == campaignes.length)
-                                        process.nextTick(function() {
-                                            cb(err, result);
-                                        });
-                                    else
-                                        i++
-                                    
+                                        else
+                                            i++
+                                        
+                                    });
                                 });
-                            });
 
 
-                        });
-                    }
-                    else
-                            process.nextTick(function() {
-                            cb(err, null);
                             });
-                        
+                        }
+                        else
+                                process.nextTick(function() {
+                                cb(err, null);
+                                });
+                            
+                    });
+
+                    //sql ="select count(*) as impressions_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
+                  
+                    
                 });
-
-                //sql ="select count(*) as impressions_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
-              
-                
             });
-        } );
+        });
   }
 };
