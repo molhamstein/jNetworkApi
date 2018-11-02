@@ -8,21 +8,30 @@ module.exports = function(Partner) {
 			option = {};
 		}
 		if(!accessToken || !accessToken.userId)
-			return cb(null,false);
+			return cb(ERROR(401,'authentication required'),false);
 		Partner.findById(accessToken.userId, function(err, user) {
 			if(err)
 				return cb(err);
 			if(!user || !user.roles.length)
 				return cb(null,false);
 			var isAdmin = _.some(user.roles(),['code','admin']);
-			if(isAdmin || (!option && !option.getCampaignIds))
+			if(isAdmin || (!option && !option.getCampaignIds && !option.getAdsIds))
 				return cb(null,isAdmin);
 
-			Partner.getCampaignIds(accessToken.userId,(err,ids)=>{
-				if(err)
-					return cb(err);
-				return cb(null,isAdmin,ids);
-			});
+			if(option.getCampaignIds){
+				Partner.getCampaignIds(accessToken.userId,(err,ids)=>{
+					if(err)
+						return cb(err);
+					return cb(null,isAdmin,ids);
+				});
+			}
+			else{
+				Partner.getAdsIds(accessToken.userId,(err,ids)=>{
+					if(err)
+						return cb(err);
+					return cb(null,isAdmin,ids);
+				});
+			}
 		});
 	}
 
@@ -32,6 +41,15 @@ module.exports = function(Partner) {
 				return cb(err);
 			var ids = [];
 			_.each(campaigns,(c)=>{ids.push(c.id)});
+			return cb(null,ids);
+		});
+	}
+	Partner.getAdsIds = function(userId,cb){
+		Partner.app.models.AD.find({where : {partner_id : userId}}, function(err, ads) {
+			if(err)
+				return cb(err);
+			var ids = [];
+			_.each(ads,(c)=>{ids.push(c.id)});
 			return cb(null,ids);
 		});
 	}

@@ -1,7 +1,41 @@
 'use strict';
 var app = require('../../server/server');
+var _ = require('lodash');
 const connector = app.dataSources.mydb.connector;
+
+
 module.exports = function(Ad) {
+    Ad.beforeRemote('find', function( ctx, modelInstance, next) {
+        Ad.app.models.partner.isAdmin(ctx.req.accessToken,function(err,isAdmin){
+            if(err)
+                return next(err);
+            if(!isAdmin)
+                _.set(ctx, 'args.filter.where.partner_id', ctx.req.accessToken.userId);
+            return next();
+        });
+    });
+    Ad.beforeRemote('count', function( ctx, modelInstance, next) {
+        Ad.app.models.partner.isAdmin(ctx.req.accessToken,function(err,isAdmin){
+            if(err)
+                return next(err);
+            if(!isAdmin)
+                _.set(ctx, 'args.where.partner_id', ctx.req.accessToken.userId);
+            return next();
+        });
+    });
+    var beforeRemoteForPermision = function( ctx, modelInstance, next) {
+      Ad.app.models.partner.isAdmin(ctx.req.accessToken,{getAdsIds :true},function(err,isAdmin,ids){
+          if(err)
+              return next(err);
+          if(!isAdmin && !_.includes(ids,Number(ctx.req.params.id)))
+              return next(ERROR(403,'permison denied'));
+          return next();
+      });
+    };
+    Ad.beforeRemote('findById', beforeRemoteForPermision);
+    Ad.beforeRemote('replaceById', beforeRemoteForPermision);
+    Ad.beforeRemote('deleteById', beforeRemoteForPermision);
+
     Ad.randomAD = function(limit,client_id,mobile,location_id=null,cb) {
 		var adM = app.models.AD;
 			 

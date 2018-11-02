@@ -1,5 +1,6 @@
 'use strict';
 var speakeasy = require('speakeasy');
+var _ = require('lodash');
 var http = require('http');
 var app = require('../../server/server');
 const connector = app.dataSources.mydb.connector;
@@ -242,23 +243,47 @@ module.exports = function(Client) {
 		http: {verb: 'post',path: '/customSms'},
     });
 
-    Client.onlineUsers = function(location,cb){
-    	var sql = "SELECT * FROM (SELECT * FROM radacct WHERE (acctstoptime IS NULL OR acctstoptime = '')) AS  A JOIN client ON client.mobile = A.username";
-    	if(location)
-    		sql = "SELECT * FROM (SELECT * FROM radacct WHERE (calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = ''))) AS  A JOIN client ON client.mobile = A.username"
-    		// sql = "SELECT * FROM radacct WHERE calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = '')";
+    Client.onlineUsers = function(req,location,cb){
+    	Client.app.models.partner.isAdmin(req.accessToken,function(err,isAdmin){
+            if(err)
+                return cb(err);
+            if(!isAdmin){
+            	var names = [];
+            	var locationWhere = 'calledStationId = \''+location+'\'';
+            	Client.app.models.locations.find({where : {partner_id : req.accessToken.userId}},function(err,locations){
+            		if(err) return cb(err);
+            		_.each(locations,(l)=>{names.push('\''+l.routerName+'\'')});
 
-    	connector.execute(sql,[],function(err,users){
-    		if(err)
-    			return cb(err);
-    		return cb(null,users);
+            		if(location && !_.includes(names,location))
+                		return cb(ERROR(403,'permison denied'));
+                	if(!location)
+                		locationWhere = 'calledStationId IN ('+names+')';
+	    			var sql = "SELECT * FROM (SELECT * FROM radacct WHERE ("+locationWhere+" AND (acctstoptime IS NULL OR acctstoptime = ''))) AS  A JOIN client ON client.mobile = A.username";
+	    			connector.execute(sql,[],function(err,users){
+			    		if(err)
+			    			return cb(err);
+			    		return cb(null,users);
+			    	});
+            	});
+            }
+            else{
+	    		var sql = "SELECT * FROM (SELECT * FROM radacct WHERE (acctstoptime IS NULL OR acctstoptime = '')) AS  A JOIN client ON client.mobile = A.username";
+		    	if(location)
+		    		sql = "SELECT * FROM (SELECT * FROM radacct WHERE (calledStationId= '"+location+"' AND (acctstoptime IS NULL OR acctstoptime = ''))) AS  A JOIN client ON client.mobile = A.username"
 
-    	})
+		    	connector.execute(sql,[],function(err,users){
+		    		if(err)
+		    			return cb(err);
+		    		return cb(null,users);
+		    	});
+            }
+        });
     };
 
     Client.remoteMethod('onlineUsers', {
     	description: 'get all online users ',
 		accepts: [
+			{arg: 'req', type: 'object', http: {source: 'req'}},
 			{arg: 'location', type: 'string', http: {source: 'query'}},
 		],
 		returns:{arg: 'users', type: 'array', root : true},
