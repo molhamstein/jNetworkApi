@@ -2,23 +2,29 @@
 
 module.exports = function(Criteria) {
 	Criteria.afterRemote('create', function(ctx,result, next) {
-		Criteria.app.models.campaign.findOne({id : result.campaign_id},function(err,campaign){
+		Criteria.app.models.campaign.findOne({where : {id : result.campaign_id}},function(err,campaign){
 			if(err)
 				return _error(err,result,next);
 			if(!campaign)
 				return _error(ERROR(404,'campaign not found'),result,next);
 			// TODO delete Criteria
 
-			Criteria.app.models.criteria_price.findOne({type : result.type},function(err,price){
+			Criteria.count({campaign_id : result.campaign_id, type : result.type},function(err,countType){
 				if(err)
-					return _error(err,result,next);
-				campaign.CPC = Number(campaign.CPC) + Number(price.perClick);
-				campaign.CPI = Number(campaign.CPI) + Number(price.perImp);
+					return _error(errr,result,next);
+				if(countType > 0)
+					return next();
 
-				campaign.save((err)=>{
+
+				Criteria.app.models.criteria_price.findOne({where : {type : result.type}},function(err,price){
 					if(err)
 						return _error(err,result,next);
-					return next();
+
+					campaign.updateAttributes({CPC : Number(campaign.CPC) + Number(price.perClick),CPI : Number(campaign.CPI) + Number(price.perImp)},(err)=>{
+						if(err)
+							return _error(err,result,next);
+						return next();
+					});
 				});
 			});
 		});

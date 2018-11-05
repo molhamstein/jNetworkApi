@@ -79,10 +79,16 @@ module.exports = function(Campaign) {
                 });
                 totalPricePerClick += Number(criteriaPrice.default.perClick);
                 totalPricePerImp += Number(criteriaPrice.default.perImp);
+
+                var calculated = {};
                 _.each(context.req.criteria,function(c){
+
                     if(criteriaPrice[c.type]){
-                        totalPricePerImp += Number(criteriaPrice[c.type].perImp);
-                        totalPricePerClick += Number(criteriaPrice[c.type].perClick);
+                        if(!calculated[c.type]){
+                            calculated[c.type] = true;
+                            totalPricePerImp += Number(criteriaPrice[c.type].perImp);
+                            totalPricePerClick += Number(criteriaPrice[c.type].perClick);
+                        }
                         c.campaign_id = campaign.id;
                         criteria.push(c);
                     }
@@ -253,12 +259,12 @@ module.exports = function(Campaign) {
     });
 
     Campaign.actionStates = function(req,res,cb){
-        Campaign.app.models.partner.isAdmin(req.accessToken,{getCampaignIds :true},function(err,isAdmin,ids){
+        Campaign.app.models.partner.isAdmin(req.accessToken,{getAdsIds :true},function(err,isAdmin,ids){
             if(err)
                 return cb(err);
             var where = {}
             if(!isAdmin){
-                where = {campaign_id : {inq : ids}}
+                where = {ad_id : {inq : ids}}
             }
             Campaign.app.models.click.count(where, function(err, countAllClicks) {
                 if(err) 
@@ -266,12 +272,16 @@ module.exports = function(Campaign) {
                 Campaign.app.models.impression.count(where, function(err, countAllImpressions) {
                     if(err) 
                         return cb(err);
+                    if(where.ad_id)
+                        where = " ad_id IN ("+ids+") AND ";
+                    else
+                        where = "";
 
-                    var sql = "SELECT count(*) AS value FROM impression WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                    var sql = "SELECT count(*) AS value FROM impression WHERE "+where+"  YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
                     connector.execute(sql,null,function(err,countImpressionInDay){
                         if(err) 
                             return cb(err);
-                    var sql = "SELECT count(*) AS value FROM click WHERE YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
+                    var sql = "SELECT count(*) AS value FROM click WHERE "+where+" YEAR(creation_date) = YEAR(CURRENT_DATE) AND MONTH(creation_date) = MONTH(CURRENT_DATE) AND DAY(creation_date) = DAY(CURRENT_DATE)"              
                         connector.execute(sql,null,function(err,countClickInDay){
                             if(err) 
                                 return cb(err);
