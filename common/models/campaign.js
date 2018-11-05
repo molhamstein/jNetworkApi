@@ -273,7 +273,7 @@ module.exports = function(Campaign) {
                     if(err) 
                         return cb(err);
                     if(where.ad_id){
-                        if(ads.length > 0)
+                        if(ids.length > 0)
                             where = " ad_id IN ("+ids+") AND ";
                         else
                             where = " 0 AND "
