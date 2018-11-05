@@ -272,8 +272,12 @@ module.exports = function(Campaign) {
                 Campaign.app.models.impression.count(where, function(err, countAllImpressions) {
                     if(err) 
                         return cb(err);
-                    if(where.ad_id)
-                        where = " ad_id IN ("+ids+") AND ";
+                    if(where.ad_id){
+                        if(ads.length > 0)
+                            where = " ad_id IN ("+ids+") AND ";
+                        else
+                            where = " 0 AND "
+                    }
                     else
                         where = "";
 
