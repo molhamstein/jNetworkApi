@@ -9,7 +9,6 @@ module.exports = function(Campaignad) {
     			  return cb(ERROR(404,'client not found'));
 
           var clientAge = new Date().getFullYear() - new Date(client.birthdate).getFullYear();
-          // console.log(clientAge)
           var sql = "SELECT campaign.id as CID, campaign.status, campaign.expiration_date, campaign.duration, criteria.* FROM campaign LEFT JOIN criteria ON campaign.id = criteria.campaign_id  WHERE (status = 'active' AND start <= CURDATE() AND expiration_date >= CURDATE() AND completed < target ) order by campaign_id "
           Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
@@ -70,10 +69,11 @@ module.exports = function(Campaignad) {
               if(value != -1)
                 allowCampign.push({id : key, value : value+1});
             });
-              var cam = _rouletteWheelSelection(allowCampign)
-            if(!cam)
-              return cb(null,[])
-            var campignId = _rouletteWheelSelection(allowCampign).id;
+              var cam = _rouletteWheelSelection(allowCampign);
+              if(allowCampign.length == 0)
+                return cb(null,[])
+            cam = cam || allowCampign[0];
+            var campignId = cam.id;
             // console.log(campignId)
             var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN AD ON AD.id = campignAD.ad_id';
             Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
