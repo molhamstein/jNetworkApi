@@ -80,7 +80,7 @@ module.exports = function(Campaignad) {
               if(err) 
                 return cb(err);
 
-              _addImpression(campignId,data,client_id,location_id,(err)=>{
+              _addImpression(campignId,data,client.id,location_id,(err)=>{
                 if(err){
                   
                   console.log(err);
