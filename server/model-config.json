@@ -92,5 +92,9 @@
   "rolemapping": {
     "dataSource": "mydb",
     "public": false
+  },
+  "isp": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

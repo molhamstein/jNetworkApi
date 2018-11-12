@@ -36,6 +36,11 @@
       "type": "belongsTo",
       "model": "partner",
       "foreignKey": "partner_id"
+    },
+    "ISP": {
+      "type": "belongsTo",
+      "model": "ISP",
+      "foreignKey": "isp_id"
     }
   },
   "acls": [],

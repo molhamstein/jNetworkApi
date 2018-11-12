@@ -1,0 +1,25 @@
+{
+  "name": "isp",
+  "plural": "/ISP",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "replaceOnPUT": false,
+
+  "hidden": [
+    "realm"
+  ],
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [{
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
+    }
+
+  ],
+  "methods": {}
+}
