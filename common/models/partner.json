@@ -47,20 +47,19 @@
       "foreignKey": "partner_id"
     },
     "roles": {
-        "type": "hasMany", 
-        "model": "role",
-        "foreignKey": "principalId",
-        "through": "rolemapping"
+      "type": "hasMany",
+      "model": "role",
+      "foreignKey": "principalId",
+      "through": "rolemapping"
 
     }
   },
-  "acls": [
-    {
+  "acls": [{
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "ALLOW",
-      "property": "count"
+      "permission": "ALLOW"
     }
+
   ],
   "methods": {}
 }

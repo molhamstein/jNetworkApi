@@ -39,7 +39,7 @@
     },
     "ISP": {
       "type": "belongsTo",
-      "model": "ISP",
+      "model": "isp",
       "foreignKey": "isp_id"
     }
   },

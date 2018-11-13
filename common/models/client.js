@@ -357,12 +357,14 @@ module.exports = function (Client) {
     }, function (err, locations) {
       if (err) return cb(err);
       mainLocation = locations;
+      console.log("locations");
+      console.log(locations);
       _.each(locations, (l) => {
         names.push('\'' + l.routerName + '\'')
       });
-      console.log("names");
-      console.log(from);
 
+      if (mainLocation.length == 0)
+          return cb(null, []);
       if (location && !_.includes(names, '\'' + location + '\''))
         return cb(ERROR(403, 'permison denied'));
       if (!location)
