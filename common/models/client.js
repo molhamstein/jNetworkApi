@@ -3,6 +3,9 @@ var speakeasy = require('speakeasy');
 var _ = require('lodash');
 var http = require('http');
 var app = require('../../server/server');
+var g = require('strong-globalize')();
+var debug = require('debug')('loopback:user');
+
 const connector = app.dataSources.mydb.connector;
 const configPath = process.env.NODE_ENV === undefined ?
   '../../server/config.json' :
@@ -66,6 +69,9 @@ module.exports = function (Client) {
       key: 'APP_SECRET' + client.mobile
     });
     console.log('Two factor code for ' + client.email + ': ' + code);
+    console.log("code");
+    console.log(code);
+
     client.updateAttributes({
       verificationToken: code,
       emailVerified: false
@@ -76,10 +82,12 @@ module.exports = function (Client) {
 
       }
     });
+    
     http.get(
       'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
         res.on('data', function (data) {
+          console.log("success");
           console.log(data.toString());
           next();
         });
@@ -195,6 +203,8 @@ module.exports = function (Client) {
 
   Client.confirmSMS = function (mobile, code, callback) {
     var clientM = app.models.client;
+        console.log("sssss");
+    
     clientM.findOne({
       where: {
         mobile: mobile
@@ -208,6 +218,7 @@ module.exports = function (Client) {
           callback(null, err2);
         });
       } else if (user.verificationToken == code) {
+        console.log("sssss");
         user.updateAttributes({
           emailVerified: true
         }, function (err) {
@@ -364,7 +375,7 @@ module.exports = function (Client) {
       });
 
       if (mainLocation.length == 0)
-          return cb(null, []);
+        return cb(null, []);
       if (location && !_.includes(names, '\'' + location + '\''))
         return cb(ERROR(403, 'permison denied'));
       if (!location)
@@ -515,4 +526,86 @@ module.exports = function (Client) {
       path: '/onlineUsersIsp'
     },
   });
+
+	Client.login = function(credentials, include, fn){
+    console.log("DDDD");
+		var self = this;
+	    if (typeof include === 'function') {
+	      fn = include;
+	      include = undefined;
+	    }
+
+	    fn = fn || utils.createPromiseCallback();
+
+	    include = (include || '');
+	    if (Array.isArray(include)) {
+	      include = include.map(function(val) {
+	        return val.toLowerCase();
+	      });
+	    } else {
+	      include = include.toLowerCase();
+	    }
+
+
+	    var query = {
+	    	mobile : credentials.mobile   
+	    }
+	    
+	    if (!query.mobile) {
+	      var err2 = new Error(g.f('{{mobile}} is required'));
+	      err2.statusCode = 400;
+	      err2.code = 'PHONENUMBER_REQUIRED';
+	      fn(err2);
+	      return fn.promise;
+	    }
+
+	    self.findOne({where: query}, function(err, user) {
+	      console.log(query,err,user);
+	      var defaultError = new Error(g.f('login failed'));
+	      defaultError.statusCode = 401;
+	      defaultError.code = 'LOGIN_FAILED';
+
+	      function tokenHandler(err, token) {
+	        if (err) return fn(err);
+	        if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
+	          // NOTE(bajtos) We can't set token.user here:
+	          //  1. token.user already exists, it's a function injected by
+	          //     "AccessToken belongsTo User" relation
+	          //  2. ModelBaseClass.toJSON() ignores own properties, thus
+	          //     the value won't be included in the HTTP response
+	          // See also loopback#161 and loopback#162
+	          token.__data.user = user;
+	        }
+	        fn(err, token);
+	      }
+
+	      if (err) {
+	        debug('An error is reported from User.findOne: %j', err);
+	        fn(defaultError);
+	      } else if (user) {
+	        user.hasPassword(credentials.password, function(err, isMatch) {
+	          if (err) {
+	            debug('An error is reported from User.hasPassword: %j', err);
+	            fn(defaultError);
+	          } else if (isMatch) {
+	            
+	            if (user.createAccessToken.length === 2) {
+	                user.createAccessToken(credentials.ttl, tokenHandler);
+	            } else {
+	                user.createAccessToken(credentials.ttl, credentials, tokenHandler);
+	            }
+	            
+	          } else {
+	            debug('The password is invalid for user %s', query.email || query.username);
+	            fn(defaultError);
+	          }
+	        });
+	      } else {
+	        debug('No matching record is found for user %s', query.email || query.username);
+	        fn(defaultError);
+	      }
+	    });
+	    return fn.promise;
+	}
+
 };
