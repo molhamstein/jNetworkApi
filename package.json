@@ -12,9 +12,6 @@
     "posttest": "npm run lint && nsp check"
   },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.0.16",
-    "@ffprobe-installer/ffprobe": "^1.0.9",
-    "@rodrigogs/mysql-events": "^0.5.1",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "fluent-ffmpeg": "^2.1.2",
@@ -25,6 +22,7 @@
     "loopback-component-explorer": "^5.0.0",
     "loopback-component-storage": "^3.5.0",
     "loopback-connector-mysql": "^5.2.0",
+    "loopback-context": "^3.3.0",
     "loopback-counts-mixin": "^1.0.1",
     "loopback-seed": "^1.0.1",
     "mongo-xlsx": "^1.0.12",

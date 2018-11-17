@@ -63,7 +63,7 @@ module.exports = function(Campaignad) {
                 }
               }
             });
-            // console.log("result campaigns : ",campaigns)
+            console.log("result campaigns : ",campaigns)
             var allowCampign = [];
             _.each(campaigns,(value,key)=>{
               if(value != -1)

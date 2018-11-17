@@ -384,6 +384,8 @@ module.exports = function(Campaign) {
             if(startDate) where.push(' creation_date >= \''+startDate+'\'');
             if(endDate) where.push(' creation_date <= \''+endDate+'\'');
 
+            where.push(' (gender =\'ذكر\' OR gender = \'أنثى\') ');
+
             if(where.length > 0)
                 where = where.join(' AND ');
             if(where != "")
@@ -396,6 +398,9 @@ module.exports = function(Campaign) {
                 connector.execute(sql,null,(err,clicks)=>{
                     if(err)
                         return cb(err);
+
+                    _.each(impressions,(i,index)=>{impressions[index].key = (i.key=='ذكر'?'male':'female');});
+                    _.each(clicks,(i,index)=>{clicks[index].key = (i.key=='ذكر'?'male':'female');});
                     return res.json([{
                        name : 'clicks',
                        series : clicks 
