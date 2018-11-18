@@ -82,7 +82,7 @@ module.exports = function (Client) {
 
       }
     });
-    
+
     http.get(
       'http://services.mtn.com.sy/General/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
@@ -203,8 +203,6 @@ module.exports = function (Client) {
 
   Client.confirmSMS = function (mobile, code, callback) {
     var clientM = app.models.client;
-        console.log("sssss");
-    
     clientM.findOne({
       where: {
         mobile: mobile
@@ -349,13 +347,19 @@ module.exports = function (Client) {
   };
 
 
-  Client.onlineUsersIsp = function (req, location, mobile, from, isExport, cb) {
+  Client.onlineUsersIsp = function (req, location, mobile, from, to, skip, ip, isExport, cb) {
+    console.log("req.accessToken.userId")
+    console.log(req.accessToken.userId)
     if (mobile == null)
       mobile = ""
+    if (ip == null)
+      ip = ""
     if (isExport == null)
       isExport = 0
     if (from == null)
       from = new Date("1995-06-25")
+    if (to == null)
+      to = new Date("2995-06-25")
     console.log("location");
     console.log(location);
     var names = [];
@@ -381,11 +385,13 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
       if (isExport == 1)
-        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%'";
+        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%'";
       else if (isExport == 2)
-        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%'";
+        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + ":" + from.getSeconds() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
+      else if (isExport == 3)
+        var sql = "SELECT mobile,gender,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%' ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
       else
-        var sql = "SELECT mobile,gender,acctstarttime,calledstationid  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND (acctstoptime IS NULL OR acctstoptime = '')  AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%'";
+        var sql = "SELECT mobile,gender,acctstarttime,calledstationid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
         if (err)
@@ -407,13 +413,15 @@ module.exports = function (Client) {
                 "Mobile": element['mobile'],
                 "Start Time": element['acctstarttime'].toString(),
                 "Stop Time": element['acctstoptime'].toString(),
-                "Location": element['calledstationid']
+                "Location": getLocation(mainLocation, element.calledstationid),
+                "IP": element['nasipaddress']
               }
             } else {
               object = {
                 "Mobile": element['mobile'],
                 "Start Time": element['acctstarttime'].toString(),
-                "Location": element['calledstationid']
+                "Location": getLocation(mainLocation, element.calledstationid),
+                "IP": element['nasipaddress']
               }
             }
             data.push(object);
@@ -439,6 +447,47 @@ module.exports = function (Client) {
     });
   }
 
+
+  Client.countOfflineUsersIsp = function (req, location, mobile, from, to, ip, cb) {
+    if (mobile == null)
+      mobile = ""
+    if (from == null)
+      from = new Date("1995-06-25")
+    if (to == null)
+      to = new Date("2995-06-25")
+    if (ip == null)
+      ip = ""
+    var names = [];
+    var mainLocation = [];
+    var locationWhere = 'calledStationId = \'' + location + '\'';
+    Client.app.models.locations.find({
+      where: {
+        isp_id: req.accessToken.userId
+      }
+    }, function (err, locations) {
+      if (err) return cb(err);
+      mainLocation = locations;
+      _.each(locations, (l) => {
+        names.push('\'' + l.routerName + '\'')
+      });
+
+      if (mainLocation.length == 0)
+        return cb(null, []);
+      if (location && !_.includes(names, '\'' + location + '\''))
+        return cb(ERROR(403, 'permison denied'));
+      if (!location)
+        locationWhere = 'calledStationId IN (' + names + ')';
+
+      var sql = "SELECT COUNT(radacctid) as count  FROM (SELECT * FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
+      console.log(sql)
+      connector.execute(sql, [], function (err, users) {
+        if (err)
+          return cb(err);
+        console.log(users);
+        return cb(null, users[0]);
+      });
+    });
+  }
 
   function getLocation(locations, routeName) {
     for (var index = 0; index < locations.length; index++) {
@@ -509,6 +558,27 @@ module.exports = function (Client) {
         }
       },
       {
+        arg: 'to',
+        type: "date",
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'skip',
+        type: "integer",
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'ip',
+        type: "string",
+        http: {
+          source: 'query'
+        }
+      },
+      {
         arg: 'isExport',
         type: "int",
         http: {
@@ -527,85 +597,144 @@ module.exports = function (Client) {
     },
   });
 
-	Client.login = function(credentials, include, fn){
+  Client.remoteMethod('countOfflineUsersIsp', {
+    description: 'get all online users ',
+    accepts: [{
+        arg: 'req',
+        type: 'object',
+        http: {
+          source: 'req'
+        }
+      },
+      {
+        arg: 'location',
+        type: 'string',
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'mobile',
+        type: 'string',
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'from',
+        type: "date",
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'to',
+        type: "date",
+        http: {
+          source: 'query'
+        }
+      },
+      {
+        arg: 'ip',
+        type: "string",
+        http: {
+          source: 'query'
+        }
+      }
+    ],
+    returns: {
+      arg: 'users',
+      type: 'object',
+      root: true
+    },
+    http: {
+      verb: 'get',
+      path: '/countOfflineUsersIsp'
+    },
+  });
+
+
+  Client.login = function (credentials, include, fn) {
     console.log("DDDD");
-		var self = this;
-	    if (typeof include === 'function') {
-	      fn = include;
-	      include = undefined;
-	    }
+    var self = this;
+    if (typeof include === 'function') {
+      fn = include;
+      include = undefined;
+    }
 
-	    fn = fn || utils.createPromiseCallback();
+    fn = fn || utils.createPromiseCallback();
 
-	    include = (include || '');
-	    if (Array.isArray(include)) {
-	      include = include.map(function(val) {
-	        return val.toLowerCase();
-	      });
-	    } else {
-	      include = include.toLowerCase();
-	    }
+    include = (include || '');
+    if (Array.isArray(include)) {
+      include = include.map(function (val) {
+        return val.toLowerCase();
+      });
+    } else {
+      include = include.toLowerCase();
+    }
 
 
-	    var query = {
-	    	mobile : credentials.mobile   
-	    }
-	    
-	    if (!query.mobile) {
-	      var err2 = new Error(g.f('{{mobile}} is required'));
-	      err2.statusCode = 400;
-	      err2.code = 'PHONENUMBER_REQUIRED';
-	      fn(err2);
-	      return fn.promise;
-	    }
+    var query = {
+      mobile: credentials.mobile
+    }
 
-	    self.findOne({where: query}, function(err, user) {
-	      console.log(query,err,user);
-	      var defaultError = new Error(g.f('login failed'));
-	      defaultError.statusCode = 401;
-	      defaultError.code = 'LOGIN_FAILED';
+    if (!query.mobile) {
+      var err2 = new Error(g.f('{{mobile}} is required'));
+      err2.statusCode = 400;
+      err2.code = 'PHONENUMBER_REQUIRED';
+      fn(err2);
+      return fn.promise;
+    }
 
-	      function tokenHandler(err, token) {
-	        if (err) return fn(err);
-	        if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
-	          // NOTE(bajtos) We can't set token.user here:
-	          //  1. token.user already exists, it's a function injected by
-	          //     "AccessToken belongsTo User" relation
-	          //  2. ModelBaseClass.toJSON() ignores own properties, thus
-	          //     the value won't be included in the HTTP response
-	          // See also loopback#161 and loopback#162
-	          token.__data.user = user;
-	        }
-	        fn(err, token);
-	      }
+    self.findOne({
+      where: query
+    }, function (err, user) {
+      console.log(query, err, user);
+      var defaultError = new Error(g.f('login failed'));
+      defaultError.statusCode = 401;
+      defaultError.code = 'LOGIN_FAILED';
 
-	      if (err) {
-	        debug('An error is reported from User.findOne: %j', err);
-	        fn(defaultError);
-	      } else if (user) {
-	        user.hasPassword(credentials.password, function(err, isMatch) {
-	          if (err) {
-	            debug('An error is reported from User.hasPassword: %j', err);
-	            fn(defaultError);
-	          } else if (isMatch) {
-	            
-	            if (user.createAccessToken.length === 2) {
-	                user.createAccessToken(credentials.ttl, tokenHandler);
-	            } else {
-	                user.createAccessToken(credentials.ttl, credentials, tokenHandler);
-	            }
-	            
-	          } else {
-	            debug('The password is invalid for user %s', query.email || query.username);
-	            fn(defaultError);
-	          }
-	        });
-	      } else {
-	        debug('No matching record is found for user %s', query.email || query.username);
-	        fn(defaultError);
-	      }
-	    });
-	    return fn.promise;
-	}
+      function tokenHandler(err, token) {
+        if (err) return fn(err);
+        if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
+          // NOTE(bajtos) We can't set token.user here:
+          //  1. token.user already exists, it's a function injected by
+          //     "AccessToken belongsTo User" relation
+          //  2. ModelBaseClass.toJSON() ignores own properties, thus
+          //     the value won't be included in the HTTP response
+          // See also loopback#161 and loopback#162
+          token.__data.user = user;
+        }
+        fn(err, token);
+      }
+
+      if (err) {
+        debug('An error is reported from User.findOne: %j', err);
+        fn(defaultError);
+      } else if (user) {
+        user.hasPassword(credentials.password, function (err, isMatch) {
+          if (err) {
+            debug('An error is reported from User.hasPassword: %j', err);
+            fn(defaultError);
+          } else if (isMatch) {
+
+            if (user.createAccessToken.length === 2) {
+              user.createAccessToken(credentials.ttl, tokenHandler);
+            } else {
+              user.createAccessToken(credentials.ttl, credentials, tokenHandler);
+            }
+
+          } else {
+            debug('The password is invalid for user %s', query.email || query.username);
+            fn(defaultError);
+          }
+        });
+      } else {
+        debug('No matching record is found for user %s', query.email || query.username);
+        fn(defaultError);
+      }
+    });
+    return fn.promise;
+  }
 
 };
