@@ -385,13 +385,15 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
       if (isExport == 1)
-        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%'";
+        var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 2)
-        var sql = "SELECT mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + ":" + from.getSeconds() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
+        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + ":" + from.getSeconds() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 3)
-        var sql = "SELECT mobile,gender,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%' ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes()+ "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
+    // SELECT mobile,gender,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress FROM radacct INNER JOIN client ON radacct.username = client.mobile WHERE (mobile LIKE '%%' AND nasipaddress LIKE '%%' AND calledStationId IN ('TCHPK_JOMAIZEH_2','TCHPK_NEW_HORIZONS_3') AND acctstoptime IS NOT NULL AND acctstarttime >= '1995-6-25'AND acctstarttime <= '2995-6-25') ORDER BY update_at DESC LIMIT 10 OFFSET 0
       else
-        var sql = "SELECT mobile,gender,acctstarttime,calledstationid,nasipaddress  FROM (SELECT * FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes()+ "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      console.log(isExport)
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
         if (err)
@@ -410,7 +412,7 @@ module.exports = function (Client) {
             if (element['acctstoptime'] != null) {
               object = {
 
-                "Mobile": element['mobile'],
+                "Mobile": element['username'],
                 "Start Time": element['acctstarttime'].toString(),
                 "Stop Time": element['acctstoptime'].toString(),
                 "Location": getLocation(mainLocation, element.calledstationid),
@@ -418,7 +420,7 @@ module.exports = function (Client) {
               }
             } else {
               object = {
-                "Mobile": element['mobile'],
+                "Mobile": element['username'],
                 "Start Time": element['acctstarttime'].toString(),
                 "Location": getLocation(mainLocation, element.calledstationid),
                 "IP": element['nasipaddress']
@@ -478,7 +480,7 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
 
-      var sql = "SELECT COUNT(radacctid) as count  FROM (SELECT * FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "')) AS  A JOIN client ON client.mobile = A.username WHERE client.mobile LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%'";
+      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
         if (err)
