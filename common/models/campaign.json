@@ -43,6 +43,10 @@
     "status": {
       "type": "string",
       "default": "pending"
+    },
+    "view_impressions": {
+      "type": "boolean",
+      "default": false
     }
   },
   "validations": [],
@@ -75,8 +79,7 @@
   "acls": [],
   "methods": {
     "states": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "req",
           "type": "object",
           "http": {
@@ -93,21 +96,17 @@
           }
         }
       ],
-      "returns": [
-        {
-          "arg": "states",
-          "type": "array",
-          "root": true,
-          "description": "return campaigns statestic"
-        }
-      ],
+      "returns": [{
+        "arg": "states",
+        "type": "array",
+        "root": true,
+        "description": "return campaigns statestic"
+      }],
       "description": "get campaigns statestic",
-      "http": [
-        {
-          "path": "/states",
-          "verb": "get"
-        }
-      ]
+      "http": [{
+        "path": "/states",
+        "verb": "get"
+      }]
     }
   }
 }

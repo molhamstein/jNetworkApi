@@ -39,7 +39,17 @@
     },
     "link": {
       "type": "string"
+    },
+    "portrait_link": {
+      "type": "string"
+    },
+    "portrait_thumb_link": {
+      "type": "string"
+    },
+    "botton_title": {
+      "type": "string"
     }
+
   },
   "validations": [],
   "relations": {
@@ -66,8 +76,7 @@
   "acls": [],
   "methods": {
     "randomAD": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "limit",
           "type": "string",
           "required": true,
@@ -104,21 +113,17 @@
           }
         }
       ],
-      "returns": [
-        {
-          "arg": "ADs",
-          "type": "array",
-          "root": true,
-          "description": "return random ad"
-        }
-      ],
+      "returns": [{
+        "arg": "ADs",
+        "type": "array",
+        "root": true,
+        "description": "return random ad"
+      }],
       "description": "get random ad",
-      "http": [
-        {
-          "path": "/RandomAD",
-          "verb": "get"
-        }
-      ]
+      "http": [{
+        "path": "/RandomAD",
+        "verb": "get"
+      }]
     }
   }
 }
