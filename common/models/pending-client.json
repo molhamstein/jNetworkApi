@@ -1,0 +1,41 @@
+{
+  "name": "pending_client",
+  "plural": "/pendingClient",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "status": {
+      "type": "string",
+      "required": true,
+      "default": "pending"
+    },
+    "created_at": {
+      "type": "date",
+      "defaultFn": "now"
+    },
+    "update_at": {
+      "type": "date"
+    }
+
+  },
+  "validations": [],
+  "relations": {
+    "locations": {
+      "type": "belongsTo",
+      "model": "locations",
+      "foreignKey": "location_id"
+    },
+    "client": {
+      "type": "belongsTo",
+      "model": "client",
+      "foreignKey": "client_id"
+    }
+
+
+  },
+  "acls": [],
+  "methods": {}
+}

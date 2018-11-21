@@ -49,7 +49,6 @@
     "botton_title": {
       "type": "string"
     }
-
   },
   "validations": [],
   "relations": {
@@ -67,16 +66,14 @@
       "type": "hasMany",
       "model": "campaign",
       "foreignKey": "ad_id",
-      "options": {
-        "nestRemoting": true
-      },
       "through": "campaign_ad"
     }
   },
   "acls": [],
   "methods": {
     "randomAD": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "limit",
           "type": "string",
           "required": true,
@@ -113,17 +110,21 @@
           }
         }
       ],
-      "returns": [{
-        "arg": "ADs",
-        "type": "array",
-        "root": true,
-        "description": "return random ad"
-      }],
+      "returns": [
+        {
+          "arg": "ADs",
+          "type": "array",
+          "root": true,
+          "description": "return random ad"
+        }
+      ],
       "description": "get random ad",
-      "http": [{
-        "path": "/RandomAD",
-        "verb": "get"
-      }]
+      "http": [
+        {
+          "path": "/RandomAD",
+          "verb": "get"
+        }
+      ]
     }
   }
 }

@@ -96,5 +96,13 @@
   "isp": {
     "dataSource": "mydb",
     "public": true
+  },
+  "location_code": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "pending_client": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

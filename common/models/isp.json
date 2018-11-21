@@ -7,19 +7,18 @@
     "validateUpsert": true
   },
   "replaceOnPUT": false,
-
   "hidden": [
     "realm"
   ],
   "properties": {},
   "validations": [],
   "relations": {},
-  "acls": [{
+  "acls": [
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW"
     }
-
   ],
   "methods": {}
 }

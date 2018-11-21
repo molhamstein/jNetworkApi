@@ -51,15 +51,14 @@
       "model": "role",
       "foreignKey": "principalId",
       "through": "rolemapping"
-
     }
   },
-  "acls": [{
+  "acls": [
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW"
     }
-
   ],
   "methods": {}
 }

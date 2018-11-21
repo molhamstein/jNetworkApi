@@ -1,0 +1,119 @@
+{
+  "name": "location_code",
+  "plural": "/locationCode",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "price": {
+      "type": "number",
+      "required": true
+    },
+    "status": {
+      "type": "string",
+      "defult": "pending"
+    },
+    "used_count": {
+      "type": "number",
+      "required": true
+    },
+    "code": {
+      "type": "number",
+      "required": true
+    },
+    "created_at": {
+      "type": "date",
+      "defaultFn": "now"
+    },
+    "update_at": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "locations": {
+      "type": "belongsTo",
+      "model": "locations",
+      "foreignKey": "location_id"
+    }
+  },
+  "acls": [],
+  "methods": {
+    "generateCode": {
+      "accepts": [
+        {
+          "arg": "price",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "location_id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "used_count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "count",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "string",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/generate",
+          "verb": "post"
+        }
+      ]
+    },
+    "useCode": {
+      "accepts": [
+        {
+          "arg": "code",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "location_id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "string",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/useCode",
+          "verb": "post"
+        }
+      ]
+    }
+  }
+}

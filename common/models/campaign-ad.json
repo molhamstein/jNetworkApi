@@ -6,16 +6,20 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {
-    "ad_id": {
-      "type": "number"
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "campaign": {
+      "type": "belongsTo",
+      "model": "campaign",
+      "foreignKey": "campaign_id"
     },
-    "campaign_id": {
-      "type": "number"
+    "aD": {
+      "type": "belongsTo",
+      "model": "AD",
+      "foreignKey": "ad_id"
     }
   },
-  "validations": [],
-  "relations": {},
   "acls": [],
   "methods": {
     "getAdsByCriteria": {

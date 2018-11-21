@@ -389,10 +389,10 @@ module.exports = function (Client) {
       else if (isExport == 2)
         var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + ":" + from.getSeconds() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 3)
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes()+ "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
-    // SELECT mobile,gender,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress FROM radacct INNER JOIN client ON radacct.username = client.mobile WHERE (mobile LIKE '%%' AND nasipaddress LIKE '%%' AND calledStationId IN ('TCHPK_JOMAIZEH_2','TCHPK_NEW_HORIZONS_3') AND acctstoptime IS NOT NULL AND acctstarttime >= '1995-6-25'AND acctstarttime <= '2995-6-25') ORDER BY update_at DESC LIMIT 10 OFFSET 0
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes() + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
+      // SELECT mobile,gender,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress FROM radacct INNER JOIN client ON radacct.username = client.mobile WHERE (mobile LIKE '%%' AND nasipaddress LIKE '%%' AND calledStationId IN ('TCHPK_JOMAIZEH_2','TCHPK_NEW_HORIZONS_3') AND acctstoptime IS NOT NULL AND acctstarttime >= '1995-6-25'AND acctstarttime <= '2995-6-25') ORDER BY update_at DESC LIMIT 10 OFFSET 0
       else
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getUTCFullYear() + "-" + (to.getUTCMonth() + 1) + "-" + to.getUTCDate() + " " + to.getUTCHours() + ":" + to.getMinutes()+ "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress,callingstationid as mac  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND  acctstarttime <= '" + to.getUTCFullYear() + "-" + (to.getUTCMonth() + 1) + "-" + to.getUTCDate() + " " + to.getUTCHours() + ":" + to.getMinutes() + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log(isExport)
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
@@ -657,7 +657,6 @@ module.exports = function (Client) {
 
 
   Client.login = function (credentials, include, fn) {
-    console.log("DDDD");
     var self = this;
     if (typeof include === 'function') {
       fn = include;
@@ -705,9 +704,51 @@ module.exports = function (Client) {
           //  2. ModelBaseClass.toJSON() ignores own properties, thus
           //     the value won't be included in the HTTP response
           // See also loopback#161 and loopback#162
+
           token.__data.user = user;
         }
         fn(err, token);
+
+        // Client.app.models.locations.find({
+        //   where: {
+        //     id: credentials.location_id
+        //   }
+        // }, function (err, location) {
+        //   token.type_location = location[0].type
+        //   if (location[0].type != 'manual')
+        //     fn(err, token);
+        //   else {
+        //     Client.app.models.pendingClient.find({
+        //       where: {
+        //         "and": [{
+        //             location_id: credentials.location_id
+        //           },
+        //           {
+        //             client_id: token.userId
+        //           },
+        //         ]
+        //       }
+        //     }, function (err, clinet) {
+        //       if (err)
+        //         fn(err, null);
+        //       if (clinet[0] != null) {
+        //         token['pendingClient'] = clinet[0]
+        //         fn(err, token);
+        //       }
+        //       Client.app.models.pendingClient.create({
+        //         "client_id": token.userId,
+        //         "location_id": credentials.location_id
+        //       }, function (err, data) {
+        //         if (err)
+        //           fn(err, null);
+        //         token['pendingClient'] = data
+        //         fn(err, token);
+        //       })
+        //     })
+        //   }
+
+        // })
+
       }
 
       if (err) {
