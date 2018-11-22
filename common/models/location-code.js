@@ -2,11 +2,12 @@
 var app = require('../../server/server');
 
 var speakeasy = require('speakeasy');
+const crypto = require("crypto");
 const connector = app.dataSources.mydb.connector;
 
 
 module.exports = function (Locationcode) {
-  Locationcode.validatesInclusionOf('status', { in: ['pending', 'soled', 'used']
+  Locationcode.validatesInclusionOf('status', { in: ['pending', 'sold', 'used']
   });
 
 
@@ -20,29 +21,72 @@ module.exports = function (Locationcode) {
    */
 
 
-
-  Locationcode.generateCode = function (price, location_id, used_count, count, callback) {
+  var generatCode = function (price, location_id, used_count, count, is_sold, callback) {
     var result = [];
     var insertData = "";
-    // TODO
+    var status = ""
+    if (is_sold)
+      status = "sold"
+    else
+      status = "pending"
+    var codes = [];
     for (var index = 0; index < count; index++) {
       var now = new Date();
-      var code = speakeasy.totp({
-        key: 'APP_SECRET' + index + location_id + now.getTime()
-      });
+      var code = crypto.randomBytes(3).toString("hex");
+      codes.push(code)
       if (index != 0)
         insertData += ","
-      insertData += "('" + code + "','" + price + "','" + used_count + "','" + location_id + "')"
+      insertData += "('" + code + "','" + price + "','" + used_count + "','" + location_id + "','" + status + "')"
     }
-    insertData = "INSERT INTO location_code(code, price,used_count,location_id) VALUES" + insertData;
-    console.log(insertData);
-
+    insertData = "INSERT INTO location_code(code, price,used_count,location_id,status) VALUES" + insertData;
     connector.execute(insertData, null, (err, resultObjects) => {
-      if (err)
-        callback(err, null);
-      callback(null, "done");
+      if (err) {
+        if (err.statusCode == 422)
+          generatCode(price, location_id, used_count, count, is_sold,
+            function (err, data) {
+              if (err) {
+                callback(err, null)
+              } else
+                callback(err, data)
+
+            })
+        else
+          callback(err, null)
+      } else
+        callback(err, codes)
+    })
+
+  }
+
+  Locationcode.generateCode = function (price, location_id, used_count, count, is_sold, callback) {
+    generatCode(price, location_id, used_count, count, is_sold, function (err, data) {
+      if (err) {
+        callback(err, null)
+      }
+      Locationcode.find({
+        where: {
+          "and": [{
+              "code": {
+                inq: data
+              }
+            },
+            {
+              "location_id": location_id
+            }
+          ]
+        }
+      }, function (err, data) {
+        if (err) {
+          callback(err, null)
+        }
+        callback(err, data)
+
+      })
+
     })
   }
+
+
 
   /**
    *

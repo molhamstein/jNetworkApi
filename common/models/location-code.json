@@ -20,7 +20,7 @@
       "required": true
     },
     "code": {
-      "type": "number",
+      "type": "string",
       "required": true
     },
     "created_at": {
@@ -42,8 +42,7 @@
   "acls": [],
   "methods": {
     "generateCode": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "price",
           "type": "number",
           "required": true,
@@ -66,27 +65,28 @@
           "type": "number",
           "required": true,
           "description": ""
-        }
-      ],
-      "returns": [
+        },
         {
-          "arg": "result",
-          "type": "string",
-          "root": true,
+          "arg": "is_sold",
+          "type": "boolean",
+          "required": true,
           "description": ""
         }
       ],
+      "returns": [{
+        "arg": "result",
+        "type": "string",
+        "root": true,
+        "description": ""
+      }],
       "description": "",
-      "http": [
-        {
-          "path": "/generate",
-          "verb": "post"
-        }
-      ]
+      "http": [{
+        "path": "/generate",
+        "verb": "post"
+      }]
     },
     "useCode": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "code",
           "type": "number",
           "required": true,
@@ -99,21 +99,17 @@
           "description": ""
         }
       ],
-      "returns": [
-        {
-          "arg": "result",
-          "type": "string",
-          "root": true,
-          "description": ""
-        }
-      ],
+      "returns": [{
+        "arg": "result",
+        "type": "string",
+        "root": true,
+        "description": ""
+      }],
       "description": "",
-      "http": [
-        {
-          "path": "/useCode",
-          "verb": "post"
-        }
-      ]
+      "http": [{
+        "path": "/useCode",
+        "verb": "post"
+      }]
     }
   }
 }
