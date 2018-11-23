@@ -29,6 +29,7 @@
     "loopback-context": "^3.3.0",
     "loopback-counts-mixin": "^1.0.1",
     "loopback-seed": "^1.0.1",
+    "loopback-ssl": "^1.0.3",
     "mongo-xlsx": "^1.0.12",
     "mysql-event-emitter": "^1.0.8",
     "node-thumbnail": "^0.14.0",

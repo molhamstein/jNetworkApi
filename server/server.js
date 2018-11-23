@@ -2,12 +2,14 @@
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var loopbackSSL = require('loopback-ssl');
 
 var app = module.exports = loopback();
 
 const LoopBackContext = require('loopback-context');
 app.use(LoopBackContext.perRequest());
 app.use(loopback.token());
+
 
 app.start = function () {
   // start the web server
@@ -33,7 +35,8 @@ boot(app, __dirname, function (err) {
   if (require.main === module) {
     //Comment this app.start line and add following lines
     //app.start();
-    app.io = require('socket.io')(app.start());
+    app.io = require('socket.io')(loopbackSSL.startServer(app));
+    
     require('socketio-auth')(app.io, {
       authenticate: function (socket, value, callback) {
 

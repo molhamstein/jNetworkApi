@@ -1,6 +1,6 @@
 {
   "restApiRoot": "/api",
-  "domain": "http://185.84.236.39:3000",
+  "domain": "https://185.84.236.39:3000",
   "host": "0.0.0.0",
   "port": 3000,
   "remoting": {
@@ -19,5 +19,14 @@
       "limit": "100kb"
     },
     "cors": false
+  },
+  "httpMode": false,
+  "certConfig": {
+    "path": "/etc/letsencrypt/live/techpeak-net.com/",
+    "key": "privkey.pem",
+    "cert": "cert.pem",
+    "ca": [],
+    "requestCert": false,
+    "rejectUnauthorized": false
   }
 }
