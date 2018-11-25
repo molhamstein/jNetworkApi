@@ -113,17 +113,16 @@ module.exports = function (Client) {
     var data = client;
     clientM.findOne({
       where: {
-        id: client.userId
+        id: client.id
       }
     }, function (err, user) {
       if (user.emailVerified == false) {
+        console.log("unauthorized")
         data = {
           name: "unauthorized",
           status: 601,
           message: "please verify your account"
         };
-        console.log(data)
-        // context.result = data;
         const err = new Error("unauthorized");
         err.statusCode = 601;
         err.code = 'VERIFICATION_REQUIRED';
@@ -688,7 +687,6 @@ module.exports = function (Client) {
     self.findOne({
       where: query
     }, function (err, user) {
-      console.log(query, err, user);
       var defaultError = new Error(g.f('login failed'));
       defaultError.statusCode = 401;
       defaultError.code = 'LOGIN_FAILED';
