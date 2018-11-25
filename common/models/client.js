@@ -128,9 +128,6 @@ module.exports = function (Client) {
         err.statusCode = 601;
         err.code = 'VERIFICATION_REQUIRED';
         next(err);
-        //console.log(context.result);
-        //next();	
-        //return data;
       } else
         next();
 
@@ -708,8 +705,11 @@ module.exports = function (Client) {
 
           token.__data.user = user;
         }
-        afterLogin({}, user, function () {
-          fn(err, token);
+        afterLogin({}, user, function (err) {
+          if (err)
+            fn(err, null)
+          else
+            fn(err, token);
         })
 
         // Client.app.models.locations.find({
