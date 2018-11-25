@@ -168,7 +168,6 @@ module.exports = function (Client) {
     console.log('Two factor code for ' + client.email + ': ' + code);
     client.updateAttributes({
       verificationToken: code,
-      emailVerified: false
     }, function (err) {
       if (err) {
 
@@ -213,7 +212,6 @@ module.exports = function (Client) {
           callback(null, err2);
         });
       } else if (user.verificationToken == code) {
-        console.log("sssss");
         user.updateAttributes({
           emailVerified: true
         }, function (err) {
