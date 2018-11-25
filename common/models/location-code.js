@@ -21,7 +21,7 @@ module.exports = function (Locationcode) {
    */
 
 
-  var generatCode = function (price, location_id, used_count, count, is_sold, callback) {
+  var generatCode = function (price, location_id, used_count, count, is_sold, seller_id, callback) {
     var result = [];
     var insertData = "";
     var status = ""
@@ -36,13 +36,13 @@ module.exports = function (Locationcode) {
       codes.push(code)
       if (index != 0)
         insertData += ","
-      insertData += "('" + code + "','" + price + "','" + used_count + "','" + location_id + "','" + status + "')"
+      insertData += "('" + code + "','" + price + "','" + used_count + "'," + location_id + ",'" + status + "'," + seller_id + ")"
     }
-    insertData = "INSERT INTO location_code(code, price,used_count,location_id,status) VALUES" + insertData;
+    insertData = "INSERT INTO location_code(code, price,used_count,location_id,status,seller_id) VALUES" + insertData;
     connector.execute(insertData, null, (err, resultObjects) => {
       if (err) {
         if (err.statusCode == 422)
-          generatCode(price, location_id, used_count, count, is_sold,
+          generatCode(price, location_id, used_count, count, is_sold, seller_id,
             function (err, data) {
               if (err) {
                 callback(err, null)
@@ -58,8 +58,11 @@ module.exports = function (Locationcode) {
 
   }
 
-  Locationcode.generateCode = function (price, location_id, used_count, count, is_sold, callback) {
-    generatCode(price, location_id, used_count, count, is_sold, function (err, data) {
+  Locationcode.generateCode = function (price, location_id, used_count, count, is_sold, seller_id, callback) {
+    console.log(seller_id);
+    if (seller_id == undefined)
+      seller_id = null
+    generatCode(price, location_id, used_count, count, is_sold, seller_id, function (err, data) {
       if (err) {
         callback(err, null)
       }
@@ -123,3 +126,11 @@ module.exports = function (Locationcode) {
     })
   };
 };
+
+
+// ,
+//     "client": {
+//       "type": "belongsTo",
+//       "model": "client",
+//       "foreignKey": "client_id"
+//     }

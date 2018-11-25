@@ -104,5 +104,13 @@
   "pending_client": {
     "dataSource": "mydb",
     "public": true
+  },
+  "seller": {
+    "dataSource": "mydb",
+    "public": true
+  },
+  "billing": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

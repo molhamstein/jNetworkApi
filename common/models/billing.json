@@ -1,36 +1,37 @@
 {
-  "name": "pending_client",
-  "plural": "/pendingClient",
+  "name": "billing",
+  "plural": "/billing",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "status": {
+    "price": {
+      "type": "number",
+      "required": true
+    },
+    "type": {
       "type": "string",
-      "required": true,
-      "default": "pending"
+      "required": true
     },
     "created_at": {
       "type": "date",
+      "required": true,
       "defaultFn": "now"
-    },
-    "update_at": {
-      "type": "date"
     }
   },
   "validations": [],
   "relations": {
-    "locations": {
+     "locations": {
       "type": "belongsTo",
       "model": "locations",
       "foreignKey": "location_id"
     },
-    "client": {
+    "seller": {
       "type": "belongsTo",
-      "model": "client",
-      "foreignKey": "client_id"
+      "model": "seller",
+      "foreignKey": "seller_id"
     }
   },
   "acls": [],

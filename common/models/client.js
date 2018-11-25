@@ -201,6 +201,8 @@ module.exports = function (Client) {
   });
 
 
+
+
   Client.confirmSMS = function (mobile, code, callback) {
     var clientM = app.models.client;
     clientM.findOne({
@@ -779,5 +781,85 @@ module.exports = function (Client) {
     });
     return fn.promise;
   }
+
+var DEFAULT_RESET_PW_TTL = 15 * 60; // 15 mins in seconds
+
+
+    Client.resetPassword = function(options, cb) {
+    cb = cb || utils.createPromiseCallback();
+    var UserModel = this;
+    var ttl = UserModel.settings.resetPasswordTokenTTL || DEFAULT_RESET_PW_TTL;
+    options = options || {};
+    if (typeof options.mobile !== 'string') {
+      var err = new Error(g.f('mobile is required'));
+      err.statusCode = 400;
+      err.code = 'MOBILE_REQUIRED';
+      cb(err);
+      return cb.promise;
+    }
+
+    try {
+      if (options.password) {
+        UserModel.validatePassword(options.password);
+      }
+    } catch (err) {
+      return cb(err);
+    }
+    var where = {
+      mobile: options.mobile,
+    };
+    if (options.realm) {
+      where.realm = options.realm;
+    }
+    UserModel.findOne({where: where}, function(err, user) {
+      if (err) {
+        return cb(err);
+      }
+      if (!user) {
+        err = new Error(g.f('mobile not found'));
+        err.statusCode = 404;
+        err.code = 'MOBILE_NOT_FOUND';
+        return cb(err);
+      }
+      // create a short lived access token for temp login to change password
+      // TODO(ritch) - eventually this should only allow password change
+      if (UserModel.settings.emailVerificationRequired && !user.emailVerified) {
+        err = new Error(g.f('Email has not been verified'));
+        err.statusCode = 401;
+        err.code = 'RESET_FAILED_EMAIL_NOT_VERIFIED';
+        return cb(err);
+      }
+
+      if (UserModel.settings.restrictResetPasswordTokenScope) {
+        const tokenData = {
+          ttl: ttl,
+          scopes: ['reset-password'],
+        };
+        user.createAccessToken(tokenData, options, onTokenCreated);
+      } else {
+        // We need to preserve backwards-compatibility with
+        // user-supplied implementations of "createAccessToken"
+        // that may not support "options" argument (we have such
+        // examples in our test suite).
+        user.createAccessToken(ttl, onTokenCreated);
+      }
+
+      function onTokenCreated(err, accessToken) {
+        if (err) {
+          return cb(err);
+        }
+        cb();
+        UserModel.emit('resetPasswordRequest', {
+          email: options.email,
+          accessToken: accessToken,
+          user: user,
+          options: options,
+        });
+      }
+    });
+
+    return cb.promise;
+  };
+
 
 };

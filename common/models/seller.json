@@ -1,0 +1,25 @@
+{
+  "name": "seller",
+  "plural": "seller",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "replaceOnPUT": false,
+  "hidden": [
+    "realm",
+    "emailVerified"
+  ],
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "locations": {
+      "type": "belongsTo",
+      "model": "locations",
+      "foreignKey": "location_id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

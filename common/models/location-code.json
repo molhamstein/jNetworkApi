@@ -37,12 +37,18 @@
       "type": "belongsTo",
       "model": "locations",
       "foreignKey": "location_id"
+    },
+    "seller": {
+      "type": "belongsTo",
+      "model": "seller",
+      "foreignKey": "seller_id"
     }
   },
   "acls": [],
   "methods": {
     "generateCode": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "price",
           "type": "number",
           "required": true,
@@ -71,22 +77,33 @@
           "type": "boolean",
           "required": true,
           "description": ""
+        },
+        {
+          "arg": "seller_id",
+          "type": "number",
+          "required": false,
+          "description": ""
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "string",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "string",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/generate",
-        "verb": "post"
-      }]
+      "http": [
+        {
+          "path": "/generate",
+          "verb": "post"
+        }
+      ]
     },
     "useCode": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "code",
           "type": "number",
           "required": true,
@@ -99,17 +116,21 @@
           "description": ""
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "string",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "string",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/useCode",
-        "verb": "post"
-      }]
+      "http": [
+        {
+          "path": "/useCode",
+          "verb": "post"
+        }
+      ]
     }
   }
 }
