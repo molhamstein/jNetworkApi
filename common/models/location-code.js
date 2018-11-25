@@ -59,34 +59,95 @@ module.exports = function (Locationcode) {
   }
 
   Locationcode.generateCode = function (price, location_id, used_count, count, is_sold, seller_id, callback) {
-    console.log(seller_id);
     if (seller_id == undefined)
       seller_id = null
-    generatCode(price, location_id, used_count, count, is_sold, seller_id, function (err, data) {
-      if (err) {
-        callback(err, null)
-      }
-      Locationcode.find({
-        where: {
-          "and": [{
-              "code": {
-                inq: data
-              }
-            },
-            {
-              "location_id": location_id
+    if (seller_id == null && is_sold == true) {
+      app.models.seller.findOne({
+          "where": {
+            "location_id": location_id,
+            "is_primary": true
+          }
+        },
+        function (err, primarySeller) {
+          if (err)
+            callback(err, null)
+          generatCode(price, location_id, used_count, count, is_sold, primarySeller.id, function (err, data) {
+            if (err) {
+              callback(err, null)
             }
-          ]
-        }
-      }, function (err, data) {
+            Locationcode.find({
+              where: {
+                "and": [{
+                    "code": {
+                      inq: data
+                    }
+                  },
+                  {
+                    "location_id": location_id
+                  }
+                ]
+              }
+            }, function (err, data) {
+              if (err) {
+                callback(err, null)
+              }
+              var insertData = ""
+              for (var index = 0; index < data.length; index++) {
+                var element = data[index];
+                if (index != 0)
+                  insertData += ","
+                insertData += "('" + price + "','automatic'," + location_id + "," + primarySeller.id + ")"
+              }
+              insertData = "INSERT INTO billing(price,type,location_id,seller_id) VALUES" + insertData;
+              connector.execute(insertData, null, (err, resultObjects) => {
+                if (!err)
+                  callback(err, data)
+              })
+
+
+            })
+
+          })
+
+        })
+    } else
+      generatCode(price, location_id, used_count, count, is_sold, seller_id, function (err, data) {
         if (err) {
           callback(err, null)
         }
-        callback(err, data)
+        Locationcode.find({
+          where: {
+            "and": [{
+                "code": {
+                  inq: data
+                }
+              },
+              {
+                "location_id": location_id
+              }
+            ]
+          }
+        }, function (err, data) {
+          if (err) {
+            callback(err, null)
+          }
+          var insertData = ""
+          for (var index = 0; index < data.length; index++) {
+            var element = data[index];
+            if (index != 0)
+              insertData += ","
+            insertData += "('" + price + "','automatic'," + location_id + "," + seller_id + ")"
+          }
+          insertData = "INSERT INTO billing(price,type,location_id,seller_id) VALUES" + insertData;
+          connector.execute(insertData, null, (err, resultObjects) => {
+            if (!err)
+              callback(err, data)
+          })
+
+
+        })
 
       })
-
-    })
   }
 
 
@@ -124,6 +185,59 @@ module.exports = function (Locationcode) {
         callback(null, element)
       }
     })
+  };
+
+
+  /**
+   *
+   * @param {number} id
+   * @param {Function(Error, object)} callback
+   */
+
+  Locationcode.soldCode = function (id, callback) {
+    var result;
+    Locationcode.findOne({
+      "where": {
+        "id": id
+      }
+    }, function (err, code) {
+      if (err)
+        callback(err, null)
+      console.log(code)
+      if (code == null) {
+        const err2 = new Error("codeNOTfound");
+        err2.statusCode = 623;
+        err2.code = 'CODE_NOT_FOUND';
+        process.nextTick(function () {
+          callback(err2, null);
+        });
+      } else if (code.status == 'sold' || code.status == 'used') {
+
+        const err2 = new Error("codeIsNotPending");
+        err2.statusCode = 624;
+        err2.code = 'CODE_NOT_PENDING';
+        process.nextTick(function () {
+          callback(err2, null);
+        });
+      } else
+        app.models.billing.create({
+          "price": code.price,
+          "type": "automatic",
+          "location_id": code.location_id,
+          "seller_id": code.seller_id
+        }, function (err, billing) {
+          if (err)
+            callback(err, null)
+          else {
+            code.status = "sold"
+            code.save()
+            callback(err, code);
+          }
+
+        })
+
+    })
+
   };
 };
 

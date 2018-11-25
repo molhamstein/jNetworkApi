@@ -11,7 +11,13 @@
     "realm",
     "emailVerified"
   ],
-  "properties": {},
+  "properties": {
+    "is_primary": {
+      "type": "boolean",
+      "required": true,
+      "defult": false
+    }
+  },
   "validations": [],
   "relations": {
     "locations": {

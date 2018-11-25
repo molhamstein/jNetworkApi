@@ -6,7 +6,7 @@ const path = require('path');
 const ffprobePath = require('@ffprobe-installer/ffprobe').path;
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var thumbler = require('video-thumb');
-var base_url = "http://185.84.236.39:3000/";
+var base_url = "https://techpeak-net.com/";
 var fs = require('fs');
 module.exports = function(Attachment) {
 	 // practical example

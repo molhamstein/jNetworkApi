@@ -34,5 +34,34 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {
+    "activePendingClient": {
+      "accepts": [{
+          "arg": "id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+
+      ],
+      "returns": [{
+        "arg": "result",
+        "type": "object",
+        "root": true,
+        "description": ""
+      }],
+      "description": "",
+      "http": [{
+        "path": "/activePenddingClient",
+        "verb": "put"
+      }]
+    }
+  }
 }

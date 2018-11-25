@@ -23,7 +23,7 @@
   },
   "validations": [],
   "relations": {
-     "locations": {
+    "locations": {
       "type": "belongsTo",
       "model": "locations",
       "foreignKey": "location_id"

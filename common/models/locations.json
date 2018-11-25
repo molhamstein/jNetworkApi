@@ -30,6 +30,9 @@
     "lng": {
       "type": "number"
     },
+    "manualActivationPrice": {
+      "type": "number"
+    },
     "ip": {
       "type": "string"
     }

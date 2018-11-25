@@ -131,6 +131,31 @@
           "verb": "post"
         }
       ]
+    },
+    "soldCode": {
+      "accepts": [
+        {
+          "arg": "id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/soldCode",
+          "verb": "put"
+        }
+      ]
     }
   }
 }
