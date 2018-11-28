@@ -133,7 +133,8 @@ module.exports = function (Client) {
     });
 
   };
-  Client.afterRemote('Confirmreset', function (context, data, next) {
+  // Client.afterRemote('Confirmreset', function (context, data, next) {
+  function afterConfirmreset(context, data, next) {
     console.log(data.mobile);
     if (data.mobile) {
       var clientM = app.models.client;
@@ -157,7 +158,7 @@ module.exports = function (Client) {
 
     next();
 
-  });
+  };
 
   // Client.afterRemote('reset', function (context, client, next) {
   function afterReset(context, client, next) {
@@ -649,6 +650,78 @@ module.exports = function (Client) {
       path: '/countOfflineUsersIsp'
     },
   });
+
+  Client.remoteMethod(
+    'Confirmreset', {
+      description: 'confirm reset password',
+      accepts: [{
+          arg: 'code',
+          type: 'string',
+          required: true
+        },
+        {
+          arg: 'newPassword',
+          type: 'string',
+          required: true,
+          description: 'new password'
+        },
+      ],
+      returns: {
+        arg: 'data',
+        type: 'object',
+        root: true,
+        description: "confirm reset by code sent in sms",
+      },
+      http: {
+        verb: 'post'
+      },
+    }
+  );
+
+
+  Client.Confirmreset = function (code, newPassword, callback) {
+    var UserModel = this;
+    UserModel.findOne({
+      where: {
+        verificationToken: code
+      }
+    }, function (err, user) {
+      if (err || user == null) {
+        const err2 = new Error("codeNOTfound");
+        err2.statusCode = 604;
+        err2.code = 'Code_NOT_FOUND';
+        process.nextTick(function () {
+          callback(null, err2);
+        });
+      } else /*if(user.verificationToken == code)*/ {
+        user.updateAttributes({
+          'password': UserModel.hashPassword(newPassword),
+          'np': newPassword
+        }, function (err) {
+          if (err) {
+            fn(err);
+          } else {
+
+            var data = {
+              name: "success",
+              mobile: user.mobile,
+              status: 402,
+              message: "reset password successful"
+            }
+            process.nextTick(function () {
+              afterConfirmreset({}, user, function (err, data) {
+                callback(null, data);
+              })
+            });
+          }
+        });
+
+
+      }
+    });
+  }
+
+
 
 
   Client.login = function (credentials, include, fn) {
