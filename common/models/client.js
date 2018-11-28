@@ -198,8 +198,7 @@ module.exports = function (Client) {
 
 
   Client.confirmSMS = function (mobile, code, callback) {
-    var clientM = 
-    s.client;
+    var clientM = app.models.client;
     clientM.findOne({
       where: {
         mobile: mobile

@@ -35,5 +35,31 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {
+    "getSellerCash": {
+      "accepts": [{
+        "arg": "type",
+        "type": "string",
+        "required": true,
+        "description": ""
+      }, {
+        "arg": "req",
+        "type": "object",
+        "http": {
+          "source": "req"
+        }
+      }],
+      "returns": [{
+        "arg": "result",
+        "type": "object",
+        "root": true,
+        "description": ""
+      }],
+      "description": "",
+      "http": [{
+        "path": "/getSellerCash",
+        "verb": "get"
+      }]
+    }
+  }
 }

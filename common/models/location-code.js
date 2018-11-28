@@ -239,6 +239,30 @@ module.exports = function (Locationcode) {
     })
 
   };
+
+
+  /**
+   *
+   * @param {object} filter {"price":"2500
+   * @param {Function(Error, object)} callback
+   */
+
+  Locationcode.getCodeToSeller = function (filter, req, callback) {
+    // TODO
+    Locationcode.findOne({
+      "where": {
+        "used_count": filter.used_count,
+        "price": filter.price,
+        "seller_id": req.accessToken.userId,
+        "status": "pending",
+      }
+    }, function (err, code) {
+      if (err)
+        callback(err, null)
+      callback(err, code)
+
+    })
+  };
 };
 
 

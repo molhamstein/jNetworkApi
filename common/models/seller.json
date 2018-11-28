@@ -27,5 +27,32 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {
+    "getCategories": {
+      "accepts": [
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/getCategories",
+          "verb": "get"
+        }
+      ]
+    }
+  }
 }

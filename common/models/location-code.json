@@ -156,6 +156,38 @@
           "verb": "put"
         }
       ]
+    },
+    "getCodeToSeller": {
+      "accepts": [
+        {
+          "arg": "filter",
+          "type": "object",
+          "required": true,
+          "description": "{\"price\":\"2500\",\"used_count\":\"5\"}"
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/getCodeSeller",
+          "verb": "get"
+        }
+      ]
     }
   }
 }
