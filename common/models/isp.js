@@ -1,7 +1,8 @@
 'use strict';
 var pubsub = require('../../server/pubsub.js');
 const MyEmitter = require('mysql-event-emitter');
-
+const path = require('path');
+const ejs = require('ejs');
 module.exports = function (isp) {
 
 
@@ -28,6 +29,29 @@ module.exports = function (isp) {
     //Calling the next middleware..
     next();
   }); //after save..
+
+
+
+  isp.on('resetPasswordRequest', function (info) {
+    // let url = `${config.siteDomain}/login/reset-password?access_token=${info.accessToken.id}&user_id=${info.user.id}`;
+    // let url = "http://104.217.253.15/dlaaalAppDevelop/Dlaaal-webApp/dist/#" + `/login/reset-password?access_token=${info.accessToken.id}&user_id=${info.user.id}`;
+    let url = `https://techpeak-net.com/isp/#/reset-password?access_token=${info.accessToken.id}&user_id=${info.user.id}`;
+    ejs.renderFile(path.resolve(__dirname + "../../../server/views/reset-password-template.ejs"), {
+      url: url
+    }, function (err, html) {
+      if (err) return console.log('> error sending password reset email', err);
+      isp.app.models.Email.send({
+        to: info.email,
+        from: 'techpeak.networks@gmail.com',
+        subject: 'Password reset',
+        html: html
+      }, function (err) {
+        if (err) return console.log('> error sending password reset email',err);
+        console.log("SSSSSSSS");
+      });
+    });
+  });
+
 };
 
 

@@ -59,6 +59,8 @@ module.exports = function (Locationcode) {
   }
 
   Locationcode.generateCode = function (price, location_id, used_count, count, is_sold, seller_id, callback) {
+    if (count > 100)
+      callback(ERROR(629, 'count is so match'), null);
     if (seller_id == undefined)
       seller_id = null
     if (seller_id == null && is_sold == true) {
@@ -174,7 +176,7 @@ module.exports = function (Locationcode) {
       } else if (element.status == 'pending')
         callback(ERROR(621, 'code is not soled'), null);
       else if (element.used_count == 0)
-        callback(ERROR(622, 'code is expired'), null);
+        callback(ERROR(628, 'code is expired'), null);
       else {
         if (element.update_at == null) {
           element.status = "used";

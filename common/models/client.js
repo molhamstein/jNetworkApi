@@ -804,7 +804,9 @@ module.exports = function (Client) {
         //       if (err)
         //         fn(err, null);
         //       if (clinet[0] != null) {
+
         //         token['pendingClient'] = clinet[0]
+        //         token['pendingClient'] = false
         //         fn(err, token);
         //       }
         //       Client.app.models.pendingClient.create({
@@ -813,8 +815,10 @@ module.exports = function (Client) {
         //       }, function (err, data) {
         //         if (err)
         //           fn(err, null);
-        //         token['pendingClient'] = data
-        //         fn(err, token);
+        //         var defaultError = new Error(g.f('You are pending client'));
+        //         defaultError.statusCode = 627;
+        //         defaultError.code = 'YOU_ARE_PENDING_CLIENT';
+        //         fn(defaultError, null);
         //       })
         //     })
         //   }

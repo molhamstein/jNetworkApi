@@ -50,6 +50,7 @@ module.exports = function (pendingClient) {
               callback(err, null)
             else {
               clientPend.status = "active"
+              clientPend.update_at = new Date();
               clientPend.save()
               callback(err, clientPend);
             }
