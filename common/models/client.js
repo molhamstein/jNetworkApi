@@ -319,9 +319,13 @@ module.exports = function (Client) {
 
           if (location && !_.includes(names, location))
             return cb(ERROR(403, 'permison denied'));
-          if (!location)
+          if (!location && locations.length > 0)
             locationWhere = 'calledStationId IN (' + names + ')';
+          else
+            return cb(null, []);
+
           var sql = "SELECT * FROM (SELECT * FROM radacct WHERE (" + locationWhere + " AND (acctstoptime IS NULL OR acctstoptime = ''))) AS  A JOIN client ON client.mobile = A.username";
+          console.log(sql)
           connector.execute(sql, [], function (err, users) {
             if (err)
               return cb(err);

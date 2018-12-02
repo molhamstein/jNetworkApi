@@ -191,7 +191,10 @@ module.exports = function (Campaign) {
       var where = [];
       if (campaignId) where.push(' campaign_id = ' + campaignId);
       else if (!isAdmin) {
+        if(ids.length > 0)
         where.push(' campaign_id IN (' + ids + ')');
+        else
+        return res.json([])
       }
       if (locationId) where.push(' location_id = ' + locationId);
       if (startDate) where.push(' creation_date >= \'' + startDate + '\'');
@@ -201,6 +204,8 @@ module.exports = function (Campaign) {
         where = where.join(' AND ');
       if (where != "")
         where = " WHERE " + where;
+      console.log(where)
+      // return 0;
       var sql = "SELECT DATE_FORMAT(creation_date,'%Y-%m-%d') as 'key' ,COUNT(*) AS value FROM impression " + where + " GROUP BY DATE_FORMAT(creation_date,'%Y-%m-%d' )";
       connector.execute(sql, null, (err, impressions) => {
         if (err)
