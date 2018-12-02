@@ -39,20 +39,26 @@ module.exports = function (pendingClient) {
         }, function (err, location) {
           if (err)
             callback(err, null)
-            console.log(location);
-          app.models.billing.create({
+          console.log(location);
+          app.models.paid_access.create({
             "price": location.manualActivationPrice,
             "type": "manual",
             "location_id": location.id,
             "seller_id": req.accessToken.userId
-          }, function (err, billing) {
+          }, function (err, paid_access) {
             if (err)
               callback(err, null)
             else {
               clientPend.status = "active"
               clientPend.update_at = new Date();
               clientPend.save()
-              callback(err, clientPend);
+
+              pendingClient.app.models.seller.findById(req.accessToken.userId, function (err, seller) {
+                seller.cash += code.price;
+                seller.save()
+                callback(err, clientPend);
+
+              })
             }
 
           })

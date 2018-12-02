@@ -391,6 +391,11 @@ module.exports = function (Campaign) {
       if (err)
         return cb(err);
       var where = {}
+      console.log("isAdmin")
+      console.log(isAdmin)
+      console.log("ids")
+      console.log(ids)
+
       if (!isAdmin) {
         where = {
           ad_id: {
@@ -398,6 +403,9 @@ module.exports = function (Campaign) {
           }
         }
       }
+      console.log("where")
+      console.log(where)
+
       Campaign.app.models.click.count(where, function (err, countAllClicks) {
         if (err)
           return cb(err);

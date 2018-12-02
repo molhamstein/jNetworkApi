@@ -1,0 +1,30 @@
+{
+  "name": "paid_access_with_draw",
+  "plural": "painAceessWithDraw",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "batch": {
+      "type": "number",
+      "required": true
+    },
+    "created_at": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "now"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "locations": {
+      "type": "belongsTo",
+      "model": "seller",
+      "foreignKey": "seller_id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

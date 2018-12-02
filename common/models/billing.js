@@ -3,8 +3,8 @@ var app = require('../../server/server');
 
 const connector = app.dataSources.mydb.connector;
 
-module.exports = function (Billing) {
-  Billing.validatesInclusionOf('type', { in: ['automatic', 'manual']
+module.exports = function (paidAccess) {
+  paidAccess.validatesInclusionOf('type', { in: ['automatic', 'manual']
   });
   /**
    *
@@ -12,14 +12,14 @@ module.exports = function (Billing) {
    * @param {Function(Error, object)} callback
    */
 
-  Billing.getSellerCash = function (type, req, callback) {
+  paidAccess.getSellerCash = function (type, req, callback) {
     var result;
     // TODO
     var result;
     console.log("req.accessToken.userId")
     console.log(req.accessToken.userId)
     var sellerId = req.accessToken.userId;
-    var sql = "SELECT  sum(price) as SUM FROM billing WHERE (type = '" + type + "'  AND   seller_id = '" + sellerId + "')";
+    var sql = "SELECT  sum(price) as SUM FROM paid_access WHERE (type = '" + type + "'  AND   seller_id = '" + sellerId + "')";
     connector.execute(sql, [], function (err, cash) {
       callback(null, cash[0]);
 

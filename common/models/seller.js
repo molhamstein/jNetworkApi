@@ -39,6 +39,21 @@ module.exports = function (Seller) {
     })
   };
 
+  /**
+   *
+   * @param {Function(Error, object)} callback
+   */
+
+  Seller.getMyCash = function (req, callback) {
+    Seller.findById(req.accessToken.userId, function (err, seller) {
+      if (err)
+        callback(err, null);
+
+      callback(err, {"cash":seller.cash});
+
+    })
+  };
+
   Seller.on('resetPasswordRequest', function (info) {
     // let url = `${config.siteDomain}/login/reset-password?access_token=${info.accessToken.id}&user_id=${info.user.id}`;
     // let url = "http://104.217.253.15/dlaaalAppDevelop/Dlaaal-webApp/dist/#" + `/login/reset-password?access_token=${info.accessToken.id}&user_id=${info.user.id}`;

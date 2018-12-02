@@ -16,6 +16,11 @@
       "type": "boolean",
       "required": true,
       "defult": false
+    },
+    "cash": {
+      "type": "number",
+      "required": true,
+      "defult": 0
     }
   },
   "validations": [],
@@ -50,6 +55,32 @@
       "http": [
         {
           "path": "/getCategories",
+          "verb": "get"
+        }
+      ]
+    },
+    "getMyCash": {
+      "accepts": [
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/getMyCash",
           "verb": "get"
         }
       ]

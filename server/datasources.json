@@ -22,19 +22,20 @@
   "email": {
     "name": "email",
     "connector": "mail",
-    "transports": [{
-      "type": "smtp",
-      "host": "smtp.gmail.com",
-      "secure": true,
-      "port": 465,
-      "tls": {
-        "rejectUnauthorized": false
-      },
-      "auth": {
-        "user": "techpeak.networks@gmail.com",
-        "pass": "t@chPea!<"
+    "transports": [
+      {
+        "type": "smtp",
+        "host": "smtp.gmail.com",
+        "secure": true,
+        "port": 465,
+        "tls": {
+          "rejectUnauthorized": false
+        },
+        "auth": {
+          "user": "techpeak.networks@gmail.com",
+          "pass": "t@chPea!<"
+        }
       }
-    }]
+    ]
   }
-
 }

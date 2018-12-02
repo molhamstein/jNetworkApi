@@ -1,6 +1,6 @@
 {
-  "name": "billing",
-  "plural": "/billing",
+  "name": "paid_access",
+  "plural": "/paidAccess",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -37,29 +37,36 @@
   "acls": [],
   "methods": {
     "getSellerCash": {
-      "accepts": [{
-        "arg": "type",
-        "type": "string",
-        "required": true,
-        "description": ""
-      }, {
-        "arg": "req",
-        "type": "object",
-        "http": {
-          "source": "req"
+      "accepts": [
+        {
+          "arg": "type",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
         }
-      }],
-      "returns": [{
-        "arg": "result",
-        "type": "object",
-        "root": true,
-        "description": ""
-      }],
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/getSellerCash",
-        "verb": "get"
-      }]
+      "http": [
+        {
+          "path": "/getSellerCash",
+          "verb": "get"
+        }
+      ]
     }
   }
 }

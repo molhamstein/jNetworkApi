@@ -112,8 +112,12 @@
     "dataSource": "mydb",
     "public": true
   },
-  "billing": {
+  "paid_access": {
     "dataSource": "mydb",
+    "public": true
+  },
+  "paid_access_with_draw": {
+    "dataSource": "db",
     "public": true
   }
 }

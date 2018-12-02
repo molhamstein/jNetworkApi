@@ -93,19 +93,28 @@ module.exports = function (Locationcode) {
               if (err) {
                 callback(err, null)
               }
-              var insertData = ""
-              for (var index = 0; index < data.length; index++) {
-                var element = data[index];
-                if (index != 0)
-                  insertData += ","
-                insertData += "('" + price + "','automatic'," + location_id + "," + primarySeller.id + ")"
-              }
-              insertData = "INSERT INTO billing(price,type,location_id,seller_id) VALUES" + insertData;
-              connector.execute(insertData, null, (err, resultObjects) => {
-                if (!err)
-                  callback(err, data)
-              })
+              if (is_sold) {
+                var insertData = ""
+                for (var index = 0; index < data.length; index++) {
+                  var element = data[index];
+                  if (index != 0)
+                    insertData += ","
+                  insertData += "('" + price + "','automatic'," + location_id + "," + primarySeller.id + ")"
+                }
+                insertData = "INSERT INTO paid_access(price,type,location_id,seller_id) VALUES" + insertData;
+                connector.execute(insertData, null, (err, resultObjects) => {
+                  if (!err) {
+                    Locationcode.app.models.seller.findById(primarySeller.id, function (err, seller) {
+                      price = price * count;
+                      seller.cash += price;
+                      seller.save()
+                      callback(err, data)
+                    })
 
+                  }
+                })
+              } else
+                callback(err, data)
 
             })
 
@@ -133,19 +142,30 @@ module.exports = function (Locationcode) {
           if (err) {
             callback(err, null)
           }
-          var insertData = ""
-          for (var index = 0; index < data.length; index++) {
-            var element = data[index];
-            if (index != 0)
-              insertData += ","
-            insertData += "('" + price + "','automatic'," + location_id + "," + seller_id + ")"
-          }
-          insertData = "INSERT INTO billing(price,type,location_id,seller_id) VALUES" + insertData;
-          connector.execute(insertData, null, (err, resultObjects) => {
-            if (!err)
-              callback(err, data)
-          })
+          if (is_sold) {
 
+            var insertData = ""
+            for (var index = 0; index < data.length; index++) {
+              var element = data[index];
+              if (index != 0)
+                insertData += ","
+              insertData += "('" + price + "','automatic'," + location_id + "," + seller_id + ")"
+            }
+            insertData = "INSERT INTO paid_access(price,type,location_id,seller_id) VALUES" + insertData;
+            connector.execute(insertData, null, (err, resultObjects) => {
+              if (!err) {
+                Locationcode.app.models.seller.findById(seller_id, function (err, seller) {
+                  price = price * count;
+                  seller.cash += price;
+                  seller.save()
+                  callback(err, data)
+                })
+
+              }
+            })
+          } else {
+            callback(err, data)
+          }
 
         })
 
@@ -222,18 +242,23 @@ module.exports = function (Locationcode) {
           callback(err2, null);
         });
       } else
-        app.models.billing.create({
+        app.models.paid_access.create({
           "price": code.price,
           "type": "automatic",
           "location_id": code.location_id,
           "seller_id": code.seller_id
-        }, function (err, billing) {
+        }, function (err, paid_access) {
           if (err)
             callback(err, null)
           else {
             code.status = "sold"
             code.save()
-            callback(err, code);
+            Locationcode.app.models.seller.findById(code.seller_id, function (err, seller) {
+              seller.cash += code.price;
+              seller.save()
+              callback(err, code);
+
+            })
           }
 
         })
