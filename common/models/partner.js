@@ -4,6 +4,8 @@ const ejs = require('ejs');
 
 var _ = require('lodash');
 module.exports = function (Partner) {
+
+
   Partner.isAdmin = function (accessToken, option, cb) {
     if (typeof cb != 'function') {
       cb = option;

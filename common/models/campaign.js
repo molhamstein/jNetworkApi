@@ -191,10 +191,16 @@ module.exports = function (Campaign) {
       var where = [];
       if (campaignId) where.push(' campaign_id = ' + campaignId);
       else if (!isAdmin) {
-        if(ids.length > 0)
-        where.push(' campaign_id IN (' + ids + ')');
+        if (ids.length > 0)
+          where.push(' campaign_id IN (' + ids + ')');
         else
-        return res.json([])
+          return res.json([{
+            name: 'clicks',
+            series: []
+          }, {
+            name: 'impressions',
+            series: [],
+          }]);
       }
       if (locationId) where.push(' location_id = ' + locationId);
       if (startDate) where.push(' creation_date >= \'' + startDate + '\'');

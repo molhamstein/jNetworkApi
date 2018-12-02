@@ -27,6 +27,17 @@
     "lat": {
       "type": "number"
     },
+    "user": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+
+    "port": {
+      "type": "number",
+      "defult": 22
+    },
     "lng": {
       "type": "number"
     },
@@ -51,5 +62,32 @@
     }
   },
   "acls": [],
-  "methods": {}
+  "methods": {
+    "disconnectClient": {
+      "accepts": [{
+          "arg": "routerName",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "username",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [{
+        "arg": "result",
+        "type": "object",
+        "root": true,
+        "description": ""
+      }],
+      "description": "",
+      "http": [{
+        "path": "/disconnectClient",
+        "verb": "post"
+      }]
+    }
+  }
 }
