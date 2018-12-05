@@ -22,21 +22,82 @@ module.exports = function (Seller) {
     })
   })
 
+
+  Seller.beforeRemote('create', function (ctx, seller, next) {
+    var data = ctx.req.body;
+    Seller.findOne({
+      "where": {
+        "location_id": data.location_id,
+        "is_primary": true
+      }
+    }, function (err, seller) {
+      if (err)
+        return next(err)
+      console.log(seller);
+      if (seller == null && !data.is_primary)
+        return next(ERROR(631, 'first POS sould be primary'))
+      if (seller != null && data.is_primary)
+        return next(ERROR(632, 'just one primary POS'))
+      next()
+    })
+
+  })
+
   /**
    *
    * @param {Function(Error, array)} callback
    */
 
-  Seller.getCategories = function (req, callback) {
+  Seller.getCategories = function (seller_id, req, callback) {
     var result;
-    console.log("req.accessToken.userId")
-    console.log(req.accessToken.userId)
-    var sellerId = req.accessToken.userId;
+    if (seller_id == undefined)
+      var sellerId = req.accessToken.userId;
+    else
+      var sellerId = seller_id;
+
     var sql = "SELECT price , used_count,COUNT(Id) as count  FROM location_code WHERE (status = 'pending'  AND   seller_id = '" + sellerId + "') group by used_count, price";
+    console.log(sql)
     connector.execute(sql, [], function (err, categories) {
       callback(null, categories);
 
     })
+  };
+
+
+  /**
+   *
+   * @param {number} seller_id
+   * @param {Function(Error, object)} callback
+   */
+
+  Seller.getState = function (seller_id, callback) {
+
+    var response = {}
+    var sql = "SELECT  sum(price) as total,count(id) as countSold FROM paid_access WHERE (seller_id = '" + seller_id + "')";
+    connector.execute(sql, [], function (err, total) {
+
+      if (err)
+        return callback(err, null)
+      response['total'] = total[0]['total'];
+      response['countSold'] = total[0]['countSold'];
+
+      var sql = "SELECT  cash as incash FROM seller WHERE (id = '" + seller_id + "')";
+      connector.execute(sql, [], function (err, total) {
+        if (err)
+          return callback(err, null)
+        response['incash'] = total[0]['incash'];
+        var sql = "SELECT  sum(price) as totalToday,count(id) as countSoldToday FROM paid_access WHERE (seller_id = '" + seller_id + "' AND cast(created_at as Date) = cast(CURRENT_TIMESTAMP() as Date) )";
+        connector.execute(sql, [], function (err, total) {
+          response['totalToday'] = total[0]['totalToday'];
+          response['countSoldToday'] = total[0]['countSoldToday'];
+          if (err)
+            return callback(err, null)
+
+          callback(null, response)
+        })
+      })
+    })
+
   };
 
   /**
@@ -49,7 +110,9 @@ module.exports = function (Seller) {
       if (err)
         callback(err, null);
 
-      callback(err, {"cash":seller.cash});
+      callback(err, {
+        "cash": seller.cash
+      });
 
     })
   };

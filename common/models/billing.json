@@ -6,6 +6,13 @@
   "options": {
     "validateUpsert": true
   },
+  "scope": {
+    "include": [
+      {
+        "relation": "client"
+      }
+    ]
+  },
   "properties": {
     "price": {
       "type": "number",
@@ -32,13 +39,17 @@
       "type": "belongsTo",
       "model": "seller",
       "foreignKey": "seller_id"
+    },
+    "client": {
+      "type": "belongsTo",
+      "model": "client",
+      "foreignKey": "client_id"
     }
   },
   "acls": [],
   "methods": {
     "getSellerCash": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "type",
           "type": "string",
           "required": true,
@@ -52,21 +63,17 @@
           }
         }
       ],
-      "returns": [
-        {
-          "arg": "result",
-          "type": "object",
-          "root": true,
-          "description": ""
-        }
-      ],
+      "returns": [{
+        "arg": "result",
+        "type": "object",
+        "root": true,
+        "description": ""
+      }],
       "description": "",
-      "http": [
-        {
-          "path": "/getSellerCash",
-          "verb": "get"
-        }
-      ]
+      "http": [{
+        "path": "/getSellerCash",
+        "verb": "get"
+      }]
     }
   }
 }

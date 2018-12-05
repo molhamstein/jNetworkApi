@@ -53,12 +53,40 @@
       "through": "rolemapping"
     }
   },
-  "acls": [
-    {
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "ALLOW"
+  "acls": [{
+    "principalType": "ROLE",
+    "principalId": "$everyone",
+    "permission": "ALLOW"
+  }],
+  "methods": {
+    "getCategories": {
+      "accepts": [{
+          "arg": "location_id",
+          "type": "number"
+        },
+        {
+          "arg": "type",
+          "type": "string"
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [{
+        "arg": "result",
+        "type": "array",
+        "root": true,
+        "description": ""
+      }],
+      "description": "",
+      "http": [{
+        "path": "/getCategories",
+        "verb": "get"
+      }]
     }
-  ],
-  "methods": {}
+  }
 }

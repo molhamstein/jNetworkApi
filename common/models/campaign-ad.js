@@ -21,6 +21,7 @@ module.exports = function(Campaignad) {
                if(campaigns[CA.CID] == '-1')
                 return;
 
+
               if(!CA.campaign_id) // not creiteria
                 campaigns[CA.CID] = 0;
 
@@ -30,7 +31,7 @@ module.exports = function(Campaignad) {
                 else
                   campaigns[CA.CID] = -1;
               }
-              else if (CA.type == 'location_id'){
+              else if (CA.type == 'location'){
                 if(location_id == CA.value)
                   campaigns[CA.CID]++;
                 else
@@ -63,6 +64,7 @@ module.exports = function(Campaignad) {
                 }
               }
             });
+            
             console.log("result campaigns : ",campaigns)
             var allowCampign = [];
             _.each(campaigns,(value,key)=>{

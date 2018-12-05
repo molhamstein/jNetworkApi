@@ -117,7 +117,7 @@
     "public": true
   },
   "paid_access_with_draw": {
-    "dataSource": "db",
+    "dataSource": "mydb",
     "public": true
   }
 }

@@ -19,7 +19,6 @@
     },
     "cash": {
       "type": "number",
-      "required": true,
       "defult": 0
     }
   },
@@ -35,6 +34,10 @@
   "methods": {
     "getCategories": {
       "accepts": [
+        {
+          "arg": "seller_id",
+          "type": "number"
+        },
         {
           "arg": "req",
           "type": "object",
@@ -81,6 +84,31 @@
       "http": [
         {
           "path": "/getMyCash",
+          "verb": "get"
+        }
+      ]
+    },
+    "getState": {
+      "accepts": [
+        {
+          "arg": "seller_id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/getState",
           "verb": "get"
         }
       ]

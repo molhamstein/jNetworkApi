@@ -33,7 +33,6 @@
     "password": {
       "type": "string"
     },
-
     "port": {
       "type": "number",
       "defult": 22
@@ -64,7 +63,8 @@
   "acls": [],
   "methods": {
     "disconnectClient": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "routerName",
           "type": "string",
           "required": true,
@@ -77,17 +77,79 @@
           "description": ""
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "object",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/disconnectClient",
-        "verb": "post"
-      }]
+      "http": [
+        {
+          "path": "/disconnectClient",
+          "verb": "post"
+        }
+      ]
+    },
+    "getMyLocations": {
+      "accepts": [
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/getMyLocations",
+          "verb": "get"
+        }
+      ]
+    },
+    "paidLocationsState": {
+      "accepts": [
+        {
+          "arg": "location_id",
+          "type": "number",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/paidLocationsState",
+          "verb": "get"
+        }
+      ]
     }
   }
 }

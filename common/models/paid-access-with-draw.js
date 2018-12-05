@@ -13,7 +13,7 @@ module.exports = function (Paidaccesswithdraw) {
         return next(err2, null);
       } else {
         seller.save()
-        next();
+        return next();
       }
     })
 

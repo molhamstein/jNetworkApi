@@ -1,6 +1,9 @@
 'use strict';
 const path = require('path');
 const ejs = require('ejs');
+var app = require('../../server/server');
+
+const connector = app.dataSources.mydb.connector;
 
 var _ = require('lodash');
 module.exports = function (Partner) {
@@ -53,6 +56,7 @@ module.exports = function (Partner) {
       return cb(null, ids);
     });
   }
+
   Partner.getAdsIds = function (userId, cb) {
     Partner.app.models.AD.find({
       where: {
@@ -88,5 +92,34 @@ module.exports = function (Partner) {
       });
     });
   });
+
+
+  Partner.getCategories = function (location_id, type, req, callback) {
+    var result;
+    if (location_id != null)
+      Partner.app.models.locations.isMyLocation(req.accessToken, location_id, 'partner', function (err, isMyLocation) {
+        if (err)
+          return callback(err, null);
+        else if (isMyLocation == false) {
+          return callback(ERROR(403, 'permison denied'), null);
+        }
+        var sql = "SELECT price , used_count,COUNT(Id) as count  FROM location_code WHERE (status = '" + type + "'  AND   location_id = '" + location_id + "') group by used_count, price";
+        connector.execute(sql, [], function (err, categories) {
+          callback(null, categories);
+
+        })
+      })
+    else {
+      Partner.app.models.locations.getMyLocation(req.accessToken, true, function (err, MyLocation) {
+        if (err)
+          return callback(err, null);
+        var sql = "SELECT price , used_count,COUNT(Id) as count  FROM location_code WHERE (status = 'pending'  AND   location_id IN (" + MyLocation + ")) group by used_count, price";
+        connector.execute(sql, [], function (err, categories) {
+          callback(null, categories);
+
+        })
+      })
+    }
+  };
 
 };

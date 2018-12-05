@@ -8,10 +8,11 @@ module.exports = function (pendingClient) {
    * @param {Function(Error, object)} callback
    */
 
-  pendingClient.activePendingClient = function (id, req, callback) {
+  pendingClient.activePendingClient = function (id, location_id,client_id, req, callback) {
     pendingClient.findOne({
       "where": {
-        "id": id
+        "id": id,
+        "location_id": location_id
       }
     }, function (err, clientPend) {
       if (err)
@@ -44,7 +45,9 @@ module.exports = function (pendingClient) {
             "price": location.manualActivationPrice,
             "type": "manual",
             "location_id": location.id,
-            "seller_id": req.accessToken.userId
+            "seller_id": req.accessToken.userId,
+            "client_id": client_id
+
           }, function (err, paid_access) {
             if (err)
               callback(err, null)
@@ -54,7 +57,7 @@ module.exports = function (pendingClient) {
               clientPend.save()
 
               pendingClient.app.models.seller.findById(req.accessToken.userId, function (err, seller) {
-                seller.cash += code.price;
+                seller.cash += location.manualActivationPrice;
                 seller.save()
                 callback(err, clientPend);
 

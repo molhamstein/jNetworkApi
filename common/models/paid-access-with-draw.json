@@ -1,6 +1,6 @@
 {
   "name": "paid_access_with_draw",
-  "plural": "painAceessWithDraw",
+  "plural": "/painAceessWithDraw",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {

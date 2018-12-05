@@ -83,6 +83,19 @@
           "type": "number",
           "required": false,
           "description": ""
+        },
+        {
+          "arg": "is_export",
+          "type": "boolean",
+          "required": true,
+          "description": ""
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
         }
       ],
       "returns": [
@@ -114,6 +127,13 @@
           "type": "number",
           "required": true,
           "description": ""
+        },
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
         }
       ],
       "returns": [
