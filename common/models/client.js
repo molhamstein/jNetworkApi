@@ -806,23 +806,27 @@ module.exports = function (Client) {
                 }, function (err, clinet) {
                   if (err)
                     fn(err, null);
-                  if (clinet[0] != null) {
-
-                    token['pendingClient'] = clinet[0]
+                  if (clinet[0] != null && clinet[0].status == "active") {
                     token['pendingClient'] = false
                     fn(err, token);
-                  }
-                  Client.app.models.pendingClient.create({
-                    "client_id": token.userId,
-                    "location_id": credentials.location_id
-                  }, function (err, data) {
-                    if (err)
-                      fn(err, null);
+                  } else if (clinet[0] != null && clinet[0].status != "active") {
                     var defaultError = new Error(g.f('You are pending client'));
                     defaultError.statusCode = 627;
                     defaultError.code = 'YOU_ARE_PENDING_CLIENT';
                     fn(defaultError, null);
-                  })
+                  } else if (clinet[0] == null) {
+                    Client.app.models.pendingClient.create({
+                      "client_id": token.userId,
+                      "location_id": credentials.location_id
+                    }, function (err, data) {
+                      if (err)
+                        fn(err, null);
+                      var defaultError = new Error(g.f('You are pending client'));
+                      defaultError.statusCode = 627;
+                      defaultError.code = 'YOU_ARE_PENDING_CLIENT';
+                      fn(defaultError, null);
+                    })
+                  }
                 })
               }
             })
