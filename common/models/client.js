@@ -781,53 +781,53 @@ module.exports = function (Client) {
         afterLogin({}, user, function (err) {
           if (err)
             fn(err, null)
-          else
+          else if (credentials.location_id == null || credentials.location_id == undefined)
             fn(err, token);
+          else
+            Client.app.models.locations.find({
+              where: {
+                id: credentials.location_id
+              }
+            }, function (err, location) {
+              token.type_location = location[0].type
+              if (location[0].type != 'manual')
+                fn(err, token);
+              else {
+                Client.app.models.pendingClient.find({
+                  where: {
+                    "and": [{
+                        location_id: credentials.location_id
+                      },
+                      {
+                        client_id: token.userId
+                      },
+                    ]
+                  }
+                }, function (err, clinet) {
+                  if (err)
+                    fn(err, null);
+                  if (clinet[0] != null) {
+
+                    token['pendingClient'] = clinet[0]
+                    token['pendingClient'] = false
+                    fn(err, token);
+                  }
+                  Client.app.models.pendingClient.create({
+                    "client_id": token.userId,
+                    "location_id": credentials.location_id
+                  }, function (err, data) {
+                    if (err)
+                      fn(err, null);
+                    var defaultError = new Error(g.f('You are pending client'));
+                    defaultError.statusCode = 627;
+                    defaultError.code = 'YOU_ARE_PENDING_CLIENT';
+                    fn(defaultError, null);
+                  })
+                })
+              }
+            })
         })
 
-        // Client.app.models.locations.find({
-        //   where: {
-        //     id: credentials.location_id
-        //   }
-        // }, function (err, location) {
-        //   token.type_location = location[0].type
-        //   if (location[0].type != 'manual')
-        //     fn(err, token);
-        //   else {
-        //     Client.app.models.pendingClient.find({
-        //       where: {
-        //         "and": [{
-        //             location_id: credentials.location_id
-        //           },
-        //           {
-        //             client_id: token.userId
-        //           },
-        //         ]
-        //       }
-        //     }, function (err, clinet) {
-        //       if (err)
-        //         fn(err, null);
-        //       if (clinet[0] != null) {
-
-        //         token['pendingClient'] = clinet[0]
-        //         token['pendingClient'] = false
-        //         fn(err, token);
-        //       }
-        //       Client.app.models.pendingClient.create({
-        //         "client_id": token.userId,
-        //         "location_id": credentials.location_id
-        //       }, function (err, data) {
-        //         if (err)
-        //           fn(err, null);
-        //         var defaultError = new Error(g.f('You are pending client'));
-        //         defaultError.statusCode = 627;
-        //         defaultError.code = 'YOU_ARE_PENDING_CLIENT';
-        //         fn(defaultError, null);
-        //       })
-        //     })
-        //   }
-
-        // })
 
       }
 
