@@ -315,39 +315,39 @@ module.exports = function (Locationcode) {
    */
 
   Locationcode.useCode = function (code, location_id, req, callback) { // TODO
-    Locationcode.app.models.locations.isMyLocation(req.accessToken, location_id, 'seller', function (err, isMyLocation) {
+    // Locationcode.app.models.locations.isMyLocation(req.accessToken, location_id, 'seller', function (err, isMyLocation) {
 
-      if (err)
-        return callback(err, null);
-      else if (isMyLocation == false) {
-        return callback(ERROR(403, 'permison denied'), null);
+    //   if (err)
+    //     return callback(err, null);
+    //   else if (isMyLocation == false) {
+    //     return callback(ERROR(403, 'permison denied'), null);
+    //   }
+    Locationcode.find({
+      where: {
+        "code": code,
+        "location_id": location_id
       }
-      Locationcode.find({
-        where: {
-          "code": code,
-          "location_id": location_id
+    }, function (err, data) {
+      var element = data[0];
+      if (err)
+        callback(err, null);
+      else if (element == null) {
+        callback(ERROR(620, 'code is error'), null);
+      } else if (element.status == 'pending')
+        callback(ERROR(621, 'code is not soled'), null);
+      else if (element.used_count == 0)
+        callback(ERROR(628, 'code is expired'), null);
+      else {
+        if (element.update_at == null) {
+          element.status = "used";
+          element.update_at = new Date();
         }
-      }, function (err, data) {
-        var element = data[0];
-        if (err)
-          callback(err, null);
-        else if (element == null) {
-          callback(ERROR(620, 'code is error'), null);
-        } else if (element.status == 'pending')
-          callback(ERROR(621, 'code is not soled'), null);
-        else if (element.used_count == 0)
-          callback(ERROR(628, 'code is expired'), null);
-        else {
-          if (element.update_at == null) {
-            element.status = "used";
-            element.update_at = new Date();
-          }
-          element.used_count--;
-          element.save();
-          callback(null, element)
-        }
-      })
-    });
+        element.used_count--;
+        element.save();
+        callback(null, element)
+      }
+    })
+    // });
 
   };
 
