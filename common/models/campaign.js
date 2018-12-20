@@ -807,16 +807,14 @@ module.exports = function (Campaign) {
                 });
 
             });
-          } else
-            {
-
-if (i == campaignes.length)
-                        process.nextTick(function () {
-                          cb(err, result);
-                        });
-                      else
-                        i++
-}
+          } else {
+            if (i == campaignes.length)
+              process.nextTick(function () {
+                cb(err, result);
+              });
+            else
+              i++
+          }
           //sql ="select count(*) as impressions_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
 
 

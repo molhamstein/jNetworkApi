@@ -118,7 +118,7 @@
       "accepts": [
         {
           "arg": "code",
-          "type": "number",
+          "type": "string",
           "required": true,
           "description": ""
         },
