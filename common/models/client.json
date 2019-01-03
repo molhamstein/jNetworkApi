@@ -6,6 +6,9 @@
   "options": {
     "validateUpsert": true
   },
+  "hidden": [
+    "np"
+  ],
   "properties": {
     "mobile": {
       "type": "string",
@@ -26,6 +29,11 @@
     "np": {
       "type": "string",
       "required": false
+    },
+    "created_at": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "now"
     }
   },
   "validations": [],

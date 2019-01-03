@@ -48,6 +48,11 @@
     },
     "botton_title": {
       "type": "string"
+    },
+    "created_at": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "now"
     }
   },
   "validations": [],
