@@ -674,27 +674,35 @@ module.exports = function (Campaign) {
   });
 
 
-  Campaign.states = function (req, partner_id, cb) {
+  Campaign.states = function (req, partner_id, isActive, cb) {
     var CampaignM = app.models.Campaign;
     var current_progress = [];
     var campaign_clicks = [];
     var campaign_impressions = [];
     //CampaignM.findOne({where: { status: 1 },order: 'RAND()'}, cb);
+    var andObject = [];
+    if (isActive)
+      andObject = [{
+        partner_id: partner_id
+      }, {
+        status: 'active'
+      }, {
+        expiration_date: {
+          gt: Date.now()
+        }
+
+      }]
+    else
+      andObject[{
+        partner_id: partner_id
+      }, {
+        expiration_date: {
+          gt: Date.now()
+        }
+      }]
+
     var where = {
-      and: [{
-          partner_id: partner_id
-        },
-        {
-          status: 'active'
-        },
-        {
-          expiration_date: {
-            gt: Date.now()
-          }
-
-        },
-
-      ]
+      and: andObject
     };
     Campaign.app.models.partner.isAdmin(req.accessToken, function (err, isAdmin) {
       if (err)

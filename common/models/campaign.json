@@ -92,6 +92,15 @@
           "http": {
             "source": "query"
           }
+        },
+        {
+          "arg": "isActive",
+          "type": "boolean",
+          "required": true,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
         }
       ],
       "returns": [

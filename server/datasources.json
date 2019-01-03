@@ -7,7 +7,7 @@
     "host": "127.0.0.1",
     "database": "radius",
     "username": "root",
-    "password": "jihad_lts",
+    "password": "",
     "name": "mydb",
     "connector": "mysql",
     "allowExtendedOperators": true
