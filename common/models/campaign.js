@@ -720,7 +720,7 @@ module.exports = function (Campaign) {
             partner_id: req.accessToken.userId
           }]
 
-        var where = {
+        where = {
           and: andObject
         };
       }
