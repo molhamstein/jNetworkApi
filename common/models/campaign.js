@@ -693,7 +693,7 @@ module.exports = function (Campaign) {
 
       }]
     else
-      andObject[{
+      andObject = [{
         partner_id: partner_id
       }, {
         expiration_date: {
