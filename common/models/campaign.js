@@ -695,10 +695,6 @@ module.exports = function (Campaign) {
     else
       andObject = [{
         partner_id: partner_id
-      }, {
-        expiration_date: {
-          gt: Date.now()
-        }
       }]
 
     var where = {
