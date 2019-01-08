@@ -704,23 +704,25 @@ module.exports = function (Campaign) {
       if (err)
         return cb(err);
       if (!isAdmin) {
-        where = {
+        if (isActive)
+          andObject = [{
+            partner_id: req.accessToken.userId
+          }, {
+            status: 'active'
+          }, {
+            expiration_date: {
+              gt: Date.now()
+            }
 
-          and: [{
-              partner_id: req.accessToken.userId
-            },
-            {
-              status: 'active'
-            },
-            {
-              expiration_date: {
-                gt: Date.now()
-              }
+          }]
+        else
+          andObject = [{
+            partner_id: req.accessToken.userId
+          }]
 
-            },
-
-          ]
-        }
+        var where = {
+          and: andObject
+        };
       }
       CampaignM.find({
         where: where
