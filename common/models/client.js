@@ -218,7 +218,7 @@ module.exports = function (Client) {
           emailVerified: true
         }, function (err) {
           if (err) {
-            fn(err);
+            callback(err);
           } else {
             var data = {
               name: "success",
