@@ -230,7 +230,7 @@ module.exports = function (Client) {
             });
           }
         });
-        var sql = " insert into radcheck (username,attribute,op,value,created_at) values ('" + mobile + "','password','==','" + user.np + "','" + new Date() + "')"
+        var sql = " insert into radcheck (username,attribute,op,value) values ('" + mobile + "','password','==','" + user.np + "')"
         connector.execute(sql, null, (err, resultObjects) => {
           if (!err) {
 
