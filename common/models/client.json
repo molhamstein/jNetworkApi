@@ -105,7 +105,7 @@
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
-      "property": "confirm2"
+      "property": "confirmSMS"
     },
     {
       "principalType": "ROLE",
@@ -182,7 +182,7 @@
       "description": "confirm account using SMS code",
       "http": [
         {
-          "path": "/confirm2",
+          "path": "/confirmSMS",
           "verb": "get"
         }
       ]
