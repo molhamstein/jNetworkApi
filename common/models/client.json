@@ -29,7 +29,7 @@
     },
     "created_at": {
       "type": "date",
-      "required": true,
+      "required": false,
       "defaultFn": "now"
     }
   },
