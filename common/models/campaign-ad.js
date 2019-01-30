@@ -13,7 +13,9 @@ module.exports = function(Campaignad) {
           Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
               return cb(err);
-            var campaigns = {}
+              console.log("dataaaaaaa");
+              console.log(data);
+              var campaigns = {}
             // console.log(data);
             _.each(data,function(CA){
               if(!campaigns[CA.CID])
