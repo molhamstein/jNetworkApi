@@ -78,7 +78,8 @@ module.exports = function(Campaignad) {
                 return cb(null,[])
             cam = cam || allowCampign[0];
             var campignId = cam.id;
-            // console.log(campignId)
+            console.log("campignId")
+            console.log(campignId)
             var sql = 'SELECT * FROM (SELECT * FROM  campaign_ad WHERE campaign_id = '+campignId+' ORDER BY RAND() LIMIT '+limit+' ) AS campignAD JOIN AD ON AD.id = campignAD.ad_id';
             Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
               if(err) 
