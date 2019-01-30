@@ -5,6 +5,7 @@ var http = require('http');
 var app = require('../../server/server');
 var g = require('strong-globalize')();
 var debug = require('debug')('loopback:user');
+var request = require('request');
 
 const connector = app.dataSources.mydb.connector;
 const configPath = process.env.NODE_ENV === undefined ?
@@ -83,7 +84,7 @@ module.exports = function (Client) {
       }
     });
 
-    http.get(
+    request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
         res.on('data', function (data) {
@@ -176,7 +177,7 @@ module.exports = function (Client) {
 
       }
     });
-    http.get(
+    request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your VerificationCode ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
         res.on('data', function (data) {
@@ -253,7 +254,7 @@ module.exports = function (Client) {
 
   Client.customSms = function (mobile, message, cb) {
     console.log(mobile, message);
-    http.get(
+    request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + mobile + '&Msg=' + message + '&Lang=0&Flash=0',
       function (res) {
         res.on('data', function (data) {
