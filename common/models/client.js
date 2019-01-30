@@ -87,11 +87,11 @@ module.exports = function (Client) {
     request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
-        res.on('data', function (data) {
-          console.log("success");
-          console.log(data.toString());
-          next();
-        });
+        // res.on('data', function (data) {
+        console.log(res);
+        // console.log(data.toString());
+        next();
+        // });
       }
     ).on('error', function () {
       data = {
@@ -258,8 +258,8 @@ module.exports = function (Client) {
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + mobile + '&Msg=' + message + '&Lang=0&Flash=0',
       function (res) {
         // res.on('data', function (data) {
-          console.log(res);
-          return cb(null, 'Done');
+        console.log(res);
+        return cb(null, 'Done');
         // });
       }
     ).on('error', function () {
