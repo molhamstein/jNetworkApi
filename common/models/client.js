@@ -257,10 +257,10 @@ module.exports = function (Client) {
     request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + mobile + '&Msg=' + message + '&Lang=0&Flash=0',
       function (res) {
-        res.on('data', function (data) {
-          console.log(data.toString());
+        // res.on('data', function (data) {
+        //   console.log(data.toString());
           return cb(null, 'Done');
-        });
+        // });
       }
     ).on('error', function () {
       data = {
