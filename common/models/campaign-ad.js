@@ -13,8 +13,8 @@ module.exports = function(Campaignad) {
           Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
             if(err) 
               return cb(err);
-              console.log("dataaaaaaa");
-              console.log(data);
+              // console.log("dataaaaaaa");
+              // console.log(data);
               var campaigns = {}
             // console.log(data);
             _.each(data,function(CA){
@@ -84,7 +84,8 @@ module.exports = function(Campaignad) {
             Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
               if(err) 
                 return cb(err);
-
+              console.log("data")
+              console.log(data)
               _addImpression(campignId,data,client.id,location_id,(err)=>{
                 if(err){
                   
