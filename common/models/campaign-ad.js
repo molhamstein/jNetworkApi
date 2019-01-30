@@ -20,8 +20,8 @@ module.exports = function (Campaignad) {
         _.each(data, function (CA) {
           if (!campaigns[CA.CID])
             campaigns[CA.CID] = 0;
-          if (campaigns[CA.CID] == '-1')
-            return;
+          // if (campaigns[CA.CID] == '-1')
+          //   return;
 
 
           if (!CA.campaign_id) // not creiteria
