@@ -13,26 +13,53 @@ module.exports = function (Campaignad) {
       Campaignad.app.dataSources.mydb.connector.execute(sql, [], function (err, data) {
         if (err)
           return cb(err);
-        // console.log("dataaaaaaa");
-        // console.log(data);
+        console.log("dataaaaaaa");
+        console.log(data);
         var campaigns = {}
-        // console.log(data);
+
         _.each(data, function (CA) {
           if (!campaigns[CA.CID])
-            campaigns[CA.CID] = 0;
+            campaigns[CA.CID] = {
+              "gender": 0,
+              "profession": 0,
+              "location": 0,
+              "age": 0
+            };
           // if (campaigns[CA.CID] == '-1')
           //   return;
 
 
           if (!CA.campaign_id) // not creiteria
-            campaigns[CA.CID] = 0;
+            campaigns[CA.CID] = {
+              "gender": 0,
+              "profession": 0,
+              "location": 0,
+              "age": 0
+            };
 
-          if (CA.type == 'gender' || CA.type == 'profession') {
-            console.log("In gender Or profession");
+
+
+
+          if (CA.type == 'profession') {
+            console.log("In  profession");
             if (client[CA.type] == CA.value) {
-              campaigns[CA.CID]++;
-            } else
-              campaigns[CA.CID] = -1;
+              if (campaigns[CA.CID]['profession'] < 0)
+                campaigns[CA.CID]['profession'] = 1;
+              else
+                campaigns[CA.CID]['profession']++;
+
+            } else if (campaigns[CA.CID]['profession'] <= 0)
+              campaigns[CA.CID]['profession'] = -1;
+          }
+          if (CA.type == 'gender') {
+            console.log("In gender");
+            if (client[CA.type] == CA.value) {
+              if (campaigns[CA.CID]['gender'] < 0)
+                campaigns[CA.CID]['gender'] = 1;
+              else
+                campaigns[CA.CID]['gender']++;
+            } else if (campaigns[CA.CID]['gender'] <= 0)
+              campaigns[CA.CID]['gender']  = -1;
           } else if (CA.type == 'location') {
             console.log("In Location");
             console.log(CA.CID);
@@ -42,47 +69,70 @@ module.exports = function (Campaignad) {
             console.log(CA.value);
             if (location_id == CA.value) {
               console.log("equal location");
-              campaigns[CA.CID]++;
-            } else {
+              if (campaigns[CA.CID]['location'] < 0)
+                campaigns[CA.CID]['location'] = 1;
+              else
+                campaigns[CA.CID]['location']++;
+            } else if (campaigns[CA.CID]['location'] <= 0) {
               console.log(" not equal location");
-              campaigns[CA.CID] = -1;
+              campaigns[CA.CID]['location'] = -1;
             }
           } else if (CA.type == 'age') {
             console.log("In Age");
-
             if (CA.operator == '=') {
               if (clientAge == CA.value)
-                campaigns[CA.CID]++;
-              else
-                campaigns[CA.CID] = -1;
+                if (campaigns[CA.CID]['age'] < 0)
+                  campaigns[CA.CID]['age'] = 1;
+                else
+                  campaigns[CA.CID]['age']++;
+              else if (campaigns[CA.CID]['age'] <= 0)
+                campaigns[CA.CID]['age']  = -1;
             } else if (CA.operator == '>' || CA.operator == '>=') {
               if (clientAge >= CA.value)
-                campaigns[CA.CID]++;
-              else
-                campaigns[CA.CID] = -1;
+                if (campaigns[CA.CID]['age'] < 0)
+                  campaigns[CA.CID]['age'] = 1;
+                else
+                  campaigns[CA.CID]['age']++;
+              else if (campaigns[CA.CID]['age'] <= 0)
+                campaigns[CA.CID]['age']  = -1;
             } else if (CA.operator == '<' || CA.operator == '<=') {
               if (clientAge <= CA.value)
-                campaigns[CA.CID]++;
-              else
-                campaigns[CA.CID] = -1;
+                if (campaigns[CA.CID]['age'] < 0)
+                  campaigns[CA.CID]['age'] = 1;
+                else
+                  campaigns[CA.CID]['age']++;
+              else if (campaigns[CA.CID]['age'] <= 0)
+                campaigns[CA.CID]['age']  = -1;
             } else {
               if (clientAge >= CA.value && clientAge <= CA.value2)
                 campaigns[CA.CID]++;
-              else
-                campaigns[CA.CID] = -1;
+              else if (campaigns[CA.CID]['age'] <= 0)
+                campaigns[CA.CID]['age']  = -1;
             }
           }
         });
 
-        console.log("result campaigns : ", campaigns)
         var allowCampign = [];
-        _.each(campaigns, (value, key) => {
-          if (value != -1)
+
+        _.each(campaigns, (element, index) => {
+          if (element["gender"] < 0 || element["profession"] < 0 || element["location"] < 0 || element["age"] < 0)
+            console.log("notUsed" + index)
+          else {
             allowCampign.push({
-              id: key,
-              value: value + 1
+              id : index,
+              value: element["gender"] + element["profession"] + element["location"] + element["age"] + 1
             });
+          }
         });
+        console.log("campaigns : ", campaigns)
+        console.log("result campaigns : ", allowCampign)
+        // _.each(campaigns, (value, key) => {
+        //   if (value != -1)
+        //     allowCampign.push({
+        //       id: key,
+        //       value: value + 1
+        //     });
+        // });
         console.log("allowCampign")
         console.log(allowCampign)
         var cam = _rouletteWheelSelection(allowCampign);
