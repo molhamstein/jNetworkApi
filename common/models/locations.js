@@ -2,11 +2,13 @@
 var SSH = require('simple-ssh');
 var _ = require('lodash');
 var app = require('../../server/server');
+var schedule = require('node-schedule');
 
 const connector = app.dataSources.mydb.connector;
 
 module.exports = function (Locations) {
-  Locations.validatesInclusionOf('type', { in: ['free', 'automatic', 'manual']
+  Locations.validatesInclusionOf('type', {
+    in: ['free', 'automatic', 'manual']
   });
 
 
@@ -174,16 +176,16 @@ module.exports = function (Locations) {
         var user = oneLocation.user;
         var port = oneLocation.port;
         var password = oneLocation.password;
+        var routerName = oneLocation.routerName;
+        // var ip = "185.84.236.39";
+        // var user = "jihad_lts";
+        // var port = "6245";
+        // var password = "jihad_lts";
 
-        var ip = "185.84.236.39";
-        var user = "jihad_lts";
-        var port = "6245";
-        var password = "jihad_lts";
-
-        var ip = "185.84.236.155";
-        var user = "guest";
-        var port = "22";
-        var password = "guest";
+        // var ip = "185.84.236.155";
+        // var user = "guest";
+        // var port = "22";
+        // var password = "guest";
 
 
         var ssh = new SSH({
@@ -202,6 +204,177 @@ module.exports = function (Locations) {
       }
 
     })
+  };
+
+
+  schedule.scheduleJob('0 * * * * *', () => {
+    Locations.find({}, function (err, data) {
+      data.forEach(element => {
+        if (element.ip != "" && element.ip != undefined)
+          cleanLocation(element.routerName, element.ip, element.user, element.password, element.port)
+      });
+    })
+  }) // run everyday at midnight
+
+  function cleanLocation(routerName, ip, user, password, port) {
+    var sql = "SELECT radacctid,username FROM `radacct` WHERE `acctstoptime` IS NULL AND `calledstationid` ='" + routerName + "'"
+    console.log("sql")
+    console.log(sql)
+    connector.execute(sql, [], function (err, res) {
+      if (err)
+        return callback(err, null)
+      if (res.length == 0)
+        return
+      var string = "";
+      res.forEach(element => {
+        string += element.radacctid + "," + element.username + ","
+      });
+      if (string != "") {
+        string = string.substr(0, string.length - 1)
+        string = "\"" + string + "\""
+      }
+
+
+      var ssh = new SSH({
+        host: ip,
+        user: user,
+        port: port,
+        pass: password
+      });
+      console.log(":global userput " + string + "; system script run checkuser")
+      ssh.exec(":global userput " + string + "; system script run checkuser", {
+          out: function (stdout) {
+            console.log("stdout");
+            console.log(stdout);
+            var response = stdout;
+
+            var stringIDS = "(";
+            if (response['value'] == undefined)
+              return
+            response['value'].forEach(element => {
+              stringIDS += "\'" + element.seeesionId + "\',"
+            });
+            if (stringIDS != "(")
+              stringIDS = stringIDS.substr(0, stringIDS.length - 1)
+
+            stringIDS += ")"
+            if (stringIDS != "()") {
+              var sql = "UPDATE `radacct` SET `acctstoptime` = Now() WHERE  radacctid IN " + stringIDS
+              connector.execute(sql, [], function (err, res) {
+                if (err)
+                  return callback(err, null)
+                console.log("seconde time");
+                console.log(res);
+                return callback(null, res)
+              })
+            } else {
+              return callback(null, {})
+            }
+          }
+        })
+        .start();
+    })
+  }
+
+  Locations.testSSH = function (routerName, callback) {
+    var result;
+    var sql = "SELECT radacctid,username FROM `radacct` WHERE `acctstoptime` IS NULL AND `calledstationid` ='" + routerName + "'"
+    connector.execute(sql, [], function (err, res) {
+      if (err)
+        return callback(err, null)
+      var string = "";
+      console.log("firset time");
+      console.log(res.length);
+
+      res.forEach(element => {
+        string += "\"seeesionId\":\"" + element.radacctid + "\",\"username\":\"" + element.username + "\","
+      });
+      if (string != "")
+        string = string.substr(0, string.length - 1)
+
+      console.log(string);
+
+      // send to ssh
+
+      Locations.findOne({
+        "where": {
+          "routerName": routerName
+        }
+      }, function (err, oneLocation) {
+        if (err) {
+          callback(err, null);
+        } else {
+          var response = {
+            "Values": [{
+              "SessionID": "66620",
+              "Username": "00963993196452",
+            }, {
+              "SessionID": "154017",
+              "Username": "00963991301707",
+            }, {
+              "SessionID": "154019",
+              "Username": "00963949229785",
+            }, {
+              "SessionID": "154020",
+              "Username": "00963930019783",
+            }]
+          }
+
+          var stringIDS = "(";
+
+          res.forEach(element => {
+            stringIDS += "\'" + element.radacctid + "\',"
+          });
+          if (stringIDS != "(")
+            stringIDS = stringIDS.substr(0, stringIDS.length - 1)
+
+          stringIDS += ")"
+          if (stringIDS != "()") {
+            var sql = "UPDATE `radacct` SET `acctstoptime` = Now() WHERE  radacctid IN " + stringIDS
+            // var sql = "SELECT * FROM `radacct` WHERE radacctid IN " + stringIDS
+            connector.execute(sql, [], function (err, res) {
+              if (err)
+                return callback(err, null)
+              console.log("seconde time");
+              console.log(res);
+              return callback(null, res)
+            })
+          } else {
+            return callback(null, {})
+          }
+          // console.log(oneLocation)
+          // // var ip = oneLocation.ip;
+          // // var user = oneLocation.user;
+          // // var port = oneLocation.port;
+          // // var password = oneLocation.password;
+          // // var routerName = oneLocation.routerName;
+
+          // var ip = "185.84.236.155";
+          // var user = "user_adm";
+          // var port = "22";
+          // var password = "tcpk@PIO";
+
+
+          // var ssh = new SSH({
+          //   host: ip,
+          //   user: user,
+          //   port: port,
+          //   pass: password
+          // });
+          // ssh.exec('system script run checkuser ', {
+          //     out: function (stdout) {
+          //       console.log("stdout");
+          //       console.log(stdout);
+          //     }
+          //   })
+          //   .start();
+        }
+
+      })
+
+      // response from ssh
+    })
+
   };
 
 };

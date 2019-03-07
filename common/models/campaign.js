@@ -3,7 +3,8 @@ var app = require('../../server/server');
 var _ = require('lodash');
 const connector = app.dataSources.mydb.connector;
 module.exports = function (Campaign) {
-  Campaign.validatesInclusionOf('status', { in: ['pending', 'active', 'paused', 'deactivated']
+  Campaign.validatesInclusionOf('status', {
+    in: ['pending', 'active', 'paused', 'deactivated']
   });
 
 
@@ -590,12 +591,13 @@ module.exports = function (Campaign) {
       if (startDate) where.push(' creation_date >= \'' + startDate + '\'');
       if (endDate) where.push(' creation_date <= \'' + endDate + '\'');
 
-      where.push(' (gender =\'ذكر\' OR gender = \'أنثى\') ');
+      where.push(' (gender =\'male\' OR gender = \'female\') ');
 
       if (where.length > 0)
         where = where.join(' AND ');
       if (where != "")
         where = " WHERE " + where;
+
       var sql = "SELECT gender AS 'key',count(*) AS value FROM impression  INNER JOIN client ON impression.client_id = client.id " + where + " GROUP BY gender"
       connector.execute(sql, null, (err, impressions) => {
         if (err)
@@ -606,10 +608,10 @@ module.exports = function (Campaign) {
             return cb(err);
 
           _.each(impressions, (i, index) => {
-            impressions[index].key = (i.key == 'ذكر' ? 'male' : 'female');
+            impressions[index].key = (i.key == 'male' ? 'male' : 'female');
           });
           _.each(clicks, (i, index) => {
-            clicks[index].key = (i.key == 'ذكر' ? 'male' : 'female');
+            clicks[index].key = (i.key == 'male' ? 'male' : 'female');
           });
           return res.json([{
             name: 'clicks',

@@ -36,7 +36,8 @@
   "acls": [],
   "methods": {
     "activePendingClient": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "id",
           "type": "number",
           "required": true,
@@ -62,17 +63,21 @@
           }
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "object",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/activePenddingClient",
-        "verb": "put"
-      }]
+      "http": [
+        {
+          "path": "/activePenddingClient",
+          "verb": "put"
+        }
+      ]
     }
   }
 }

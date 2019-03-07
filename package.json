@@ -32,6 +32,7 @@
     "loopback-ssl": "^1.0.3",
     "mongo-xlsx": "^1.0.12",
     "mysql-event-emitter": "^1.0.8",
+    "node-schedule": "^1.3.1",
     "node-ssh": "^5.1.2",
     "node-thumbnail": "^0.14.0",
     "request": "^2.88.0",

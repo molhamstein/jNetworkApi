@@ -5,6 +5,13 @@
   "options": {
     "validateUpsert": true
   },
+  "scope": {
+    "include": [{
+        "relation": "city"
+      }
+    ]
+  },
+
   "properties": {
     "id": {
       "type": "number",
@@ -58,10 +65,43 @@
       "type": "belongsTo",
       "model": "isp",
       "foreignKey": "isp_id"
+    },
+    "city": {
+      "type": "belongsTo",
+      "model": "city",
+      "foreignKey": "cityId",
+      "options": {
+        "nestRemoting": true
+      }
     }
   },
   "acls": [],
   "methods": {
+    "testSSH": {
+      "accepts": [
+        {
+          "arg": "routerName",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
+      "description": "",
+      "http": [
+        {
+          "path": "/testSSH",
+          "verb": "post"
+        }
+      ]
+    },
     "disconnectClient": {
       "accepts": [
         {

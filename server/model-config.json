@@ -119,5 +119,9 @@
   "paid_access_with_draw": {
     "dataSource": "mydb",
     "public": true
+  },
+  "city": {
+    "dataSource": "mydb",
+    "public": true
   }
 }
