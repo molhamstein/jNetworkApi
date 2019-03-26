@@ -377,4 +377,71 @@ module.exports = function (Locations) {
 
   };
 
+  function makeLoop(data, callback) {
+    var index = 0
+    var arrayData = data
+    var loopArray = function (arrayData) {
+      console.log("index");
+      console.log(index);
+      getClickAndImpLocation(arrayData[index].id, function (err, obj) {
+        // set x to next item
+        if (err)
+          return callback(err)
+
+        arrayData[index].clcickedCount = obj.clcickedCount
+        arrayData[index].impressionCount = obj.impressionCount
+        index++;
+        // any more items in array? continue loop
+        if (index < arrayData.length) {
+          loopArray(arrayData);
+        }
+        if (index == arrayData.length)
+          callback(null, arrayData)
+      });
+    }
+    loopArray(arrayData);
+  }
+
+  function getClickAndImpLocation(id, callback) {
+    Locations.app.models.click.count({
+      "location_id": id
+    }, function (err, clcickedCount) {
+      if (err)
+        return callback(err)
+      if (clcickedCount == null)
+        clcickedCount = 0
+      Locations.app.models.impression.count({
+        "location_id": id
+      }, function (err, impressionCount) {
+        if (err)
+          return callback(err)
+        if (impressionCount == null)
+          impressionCount = 0
+          console.log({
+            clcickedCount: clcickedCount,
+            impressionCount: impressionCount
+          })
+        return callback(err, {
+          clcickedCount: clcickedCount,
+          impressionCount: impressionCount
+        })
+      })
+    })
+  }
+
+  Locations.getClickedAndImpression = function (callback) {
+    Locations.find({}, function (err, data) {
+      if (err)
+        callback(err, {})
+      console.log("data.length");
+      console.log(data.length);
+
+      makeLoop(data, function (err, arrayData) {
+        if (err)
+          return callback(err)
+        callback(err, arrayData)
+      });
+
+    })
+  }
 };

@@ -81,8 +81,7 @@
   "acls": [],
   "methods": {
     "states": {
-      "accepts": [
-        {
+      "accepts": [{
           "arg": "req",
           "type": "object",
           "http": {
@@ -106,23 +105,28 @@
           "http": {
             "source": "query"
           }
-        }
-      ],
-      "returns": [
+        },
         {
-          "arg": "states",
-          "type": "array",
-          "root": true,
-          "description": "return campaigns statestic"
+          "arg": "isAllCampaign",
+          "type": "boolean",
+          "required": false,
+          "description": "",
+          "http": {
+            "source": "query"
+          }
         }
       ],
+      "returns": [{
+        "arg": "states",
+        "type": "array",
+        "root": true,
+        "description": "return campaigns statestic"
+      }],
       "description": "get campaigns statestic",
-      "http": [
-        {
-          "path": "/states",
-          "verb": "get"
-        }
-      ]
+      "http": [{
+        "path": "/states",
+        "verb": "get"
+      }]
     }
   }
 }

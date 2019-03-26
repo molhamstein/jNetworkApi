@@ -676,7 +676,7 @@ module.exports = function (Campaign) {
   });
 
 
-  Campaign.states = function (req, partner_id, isActive, cb) {
+  Campaign.states = function (req, partner_id, isActive, isAllCampaign, cb) {
     var CampaignM = app.models.Campaign;
     var current_progress = [];
     var campaign_clicks = [];
@@ -746,7 +746,7 @@ module.exports = function (Campaign) {
         if (!campaignes.length)
           return cb(null, result)
         campaignes.forEach(campaign => {
-          if (campaign['target'] > campaign['completed']) {
+          if (campaign['target'] > campaign['completed'] || isAllCampaign) {
             // console.log("campaign is "+campaign.name)
             //var sql ="select count(*) as clicks_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
             var sql = "select count(*) as clicks_count from  click  where campaign_id='" + campaign.id + "'";
@@ -823,7 +823,7 @@ module.exports = function (Campaign) {
             else
               i++
           }
-          //sql ="select count(*) as impressions_count from AD inner join click on ad.id = ad_id where campaign_id='"+campaign.id+"'";
+          sql = "select count(*) as impressions_count from AD inner join click on ad.id = ad_id where campaign_id='" + campaign.id + "'";
 
 
         });

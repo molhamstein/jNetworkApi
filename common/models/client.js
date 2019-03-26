@@ -181,8 +181,8 @@ module.exports = function (Client) {
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your VerificationCode ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
         // res.on('data', function (data) {
-          console.log(res);
-          next();
+        console.log(res);
+        next();
         // });
       }
     ).on('error', function () {
@@ -474,6 +474,10 @@ module.exports = function (Client) {
       _.each(locations, (l) => {
         names.push('\'' + l.routerName + '\'')
       });
+      console.log("from");
+      console.log(from);
+      console.log("to");
+      console.log(to);
 
       if (mainLocation.length == 0)
         return cb(null, []);
@@ -482,7 +486,8 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
 
-      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      console.log("sqllllllllllll")
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
         if (err)
