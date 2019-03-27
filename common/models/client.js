@@ -6,6 +6,8 @@ var app = require('../../server/server');
 var g = require('strong-globalize')();
 var debug = require('debug')('loopback:user');
 var request = require('request');
+var dateFormat = require('dateformat');
+
 
 const connector = app.dataSources.mydb.connector;
 const configPath = process.env.NODE_ENV === undefined ?
@@ -388,13 +390,13 @@ module.exports = function (Client) {
         locationWhere = 'calledStationId IN (' + names + ')';
       var now = new Date();
       if (isExport == 1)
-        var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + dateFormat(new Date(from), "yyyy-mm-dd h:MM:ss") + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 2)
-        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + ":" + from.getSeconds() + "'AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + dateFormat(new Date(from), "yyyy-mm-dd h:MM:ss")  + "'AND  acctstarttime <= '" +  dateFormat(new Date(from), "yyyy-mm-dd h:MM:ss")+ "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 3)
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes() + "'AND  acctstoptime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd h:MM:ss") + "'AND  acctstoptime >= '" + dateFormat(new Date(from), "yyyy-mm-dd h:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
       else
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress,callingstationid as mac  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes() + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress,callingstationid as mac  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd h:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log(isExport)
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
@@ -486,7 +488,7 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
 
-      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate() + " " + from.getHours() + ":" + from.getMinutes() + "'AND   acctstarttime <= '" + to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate() + " " + to.getHours() + ":" + to.getMinutes() + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + dateFormat(new Date(from), "yyyy-mm-dd h:MM:ss")  + "'AND   acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd h:MM:ss")  + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log("sqllllllllllll")
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
