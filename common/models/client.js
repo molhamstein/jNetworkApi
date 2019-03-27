@@ -390,6 +390,7 @@ module.exports = function (Client) {
         locationWhere = 'calledStationId IN (' + names + ')';
       var now = new Date();
       console.log("from")
+      console.log(from)
       console.log(new Date(from))
       console.log(new Date(from).toUTCString())
       if (isExport == 1)
