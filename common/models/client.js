@@ -390,13 +390,13 @@ module.exports = function (Client) {
         locationWhere = 'calledStationId IN (' + names + ')';
       var now = new Date();
       if (isExport == 1)
-        var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + dateFormat(new Date(from), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + dateFormat(new Date(from.toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 2)
-        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + dateFormat(new Date(from), "yyyy-mm-dd HH:MM:ss")  + "'AND  acctstarttime <= '" +  dateFormat(new Date(from), "yyyy-mm-dd HH:MM:ss")+ "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + dateFormat(new Date(from.toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND  acctstarttime <= '" +  dateFormat(new Date(from.toUTCString()), "yyyy-mm-dd HH:MM:ss")+ "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 3)
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd HH:MM:ss") + "'AND  acctstoptime >= '" + dateFormat(new Date(from), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime <= '" + dateFormat(new Date(to.toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND  acctstoptime >= '" + dateFormat(new Date(from.toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
       else
-        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress,callingstationid as mac  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,calledstationid,nasipaddress,callingstationid as mac  FROM  radacct WHERE (" + locationWhere + "  AND acctstoptime IS NULL AND  acctstarttime <= '" + dateFormat(new Date(to.toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log(isExport)
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
@@ -488,7 +488,7 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
 
-      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + dateFormat(new Date(from), "yyyy-mm-dd HH:MM:ss")  + "'AND   acctstarttime <= '" + dateFormat(new Date(to), "yyyy-mm-dd HH:MM:ss")  + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + dateFormat(new Date(from.toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND   acctstarttime <= '" + dateFormat(new Date(to.toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log("sqllllllllllll")
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
