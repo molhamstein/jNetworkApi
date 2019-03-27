@@ -390,6 +390,7 @@ module.exports = function (Client) {
         locationWhere = 'calledStationId IN (' + names + ')';
       var now = new Date();
       console.log("from")
+      console.log(new Date(from))
       console.log(new Date(from).toUTCString())
       if (isExport == 1)
         var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
