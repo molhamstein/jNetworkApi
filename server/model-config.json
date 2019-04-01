@@ -123,5 +123,9 @@
   "city": {
     "dataSource": "mydb",
     "public": true
+  },
+  "verificationTokens": {
+    "dataSource": "mydb",
+    "public": true
   }
 }

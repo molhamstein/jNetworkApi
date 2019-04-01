@@ -59,7 +59,7 @@ module.exports = function (Campaignad) {
               else
                 campaigns[CA.CID]['gender']++;
             } else if (campaigns[CA.CID]['gender'] <= 0)
-              campaigns[CA.CID]['gender']  = -1;
+              campaigns[CA.CID]['gender'] = -1;
           } else if (CA.type == 'location') {
             console.log("In Location");
             console.log(CA.CID);
@@ -86,7 +86,7 @@ module.exports = function (Campaignad) {
                 else
                   campaigns[CA.CID]['age']++;
               else if (campaigns[CA.CID]['age'] <= 0)
-                campaigns[CA.CID]['age']  = -1;
+                campaigns[CA.CID]['age'] = -1;
             } else if (CA.operator == '>' || CA.operator == '>=') {
               if (clientAge >= CA.value)
                 if (campaigns[CA.CID]['age'] < 0)
@@ -94,7 +94,7 @@ module.exports = function (Campaignad) {
                 else
                   campaigns[CA.CID]['age']++;
               else if (campaigns[CA.CID]['age'] <= 0)
-                campaigns[CA.CID]['age']  = -1;
+                campaigns[CA.CID]['age'] = -1;
             } else if (CA.operator == '<' || CA.operator == '<=') {
               if (clientAge <= CA.value)
                 if (campaigns[CA.CID]['age'] < 0)
@@ -102,12 +102,12 @@ module.exports = function (Campaignad) {
                 else
                   campaigns[CA.CID]['age']++;
               else if (campaigns[CA.CID]['age'] <= 0)
-                campaigns[CA.CID]['age']  = -1;
+                campaigns[CA.CID]['age'] = -1;
             } else {
               if (clientAge >= CA.value && clientAge <= CA.value2)
                 campaigns[CA.CID]++;
               else if (campaigns[CA.CID]['age'] <= 0)
-                campaigns[CA.CID]['age']  = -1;
+                campaigns[CA.CID]['age'] = -1;
             }
           }
         });
@@ -119,7 +119,7 @@ module.exports = function (Campaignad) {
             console.log("notUsed" + index)
           else {
             allowCampign.push({
-              id : index,
+              id: index,
               value: element["gender"] + element["profession"] + element["location"] + element["age"] + 1
             });
           }
@@ -150,11 +150,48 @@ module.exports = function (Campaignad) {
           console.log(data)
           _addImpression(campignId, data, client.id, location_id, (err) => {
             if (err) {
-
               console.log(err);
               return cb(err);
             }
-            return cb(null, data);
+            if (data.length != 0) {
+
+              Campaignad.app.models.partner.findById(data[0]['partner_id'], function (err, part) {
+                if (err) {
+                  return cb(err);
+                }
+
+                Campaignad.app.models.campaign.findById(data[0]['campaign_id'], function (err, camp) {
+                  if (err) {
+                    return cb(err);
+                  }
+                  var tempBalance = part['balance'] - camp['CPI']
+                  if (camp['type'] == "impressions")
+                    var tempCompleted = camp['completed'] + 1;
+                  part.updateAttributes({
+                    'balance': tempBalance
+                  }, function () {
+                    camp.updateAttributes({
+                      'completed': tempCompleted
+                    }, function () {
+                      if (tempBalance < part['min_balance']) {
+                        console.log("deactive all cam")
+                        Campaignad.app.models.campaign.updateAll({
+                          "partner_id": data[0]['partner_id']
+                        }, {
+                          "status": "deactivated"
+                        }, function (err, newData) {
+                          return cb(null, data);
+
+                        })
+                      } else {
+                        console.log("not  deactive all cam")
+                        return cb(null, data);
+                      }
+                    })
+                  })
+                })
+              })
+            }
           })
         });
       });

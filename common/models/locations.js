@@ -225,6 +225,7 @@ module.exports = function (Locations) {
         return callback(err, null)
       if (res.length == 0)
         return
+      console.log(res)
       var string = "";
       res.forEach(element => {
         string += element.radacctid + "," + element.username + ","
@@ -417,10 +418,10 @@ module.exports = function (Locations) {
           return callback(err)
         if (impressionCount == null)
           impressionCount = 0
-          console.log({
-            clcickedCount: clcickedCount,
-            impressionCount: impressionCount
-          })
+        console.log({
+          clcickedCount: clcickedCount,
+          impressionCount: impressionCount
+        })
         return callback(err, {
           clcickedCount: clcickedCount,
           impressionCount: impressionCount

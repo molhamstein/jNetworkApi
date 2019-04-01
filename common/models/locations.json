@@ -6,11 +6,12 @@
     "validateUpsert": true
   },
   "scope": {
-    "include": [{
-      "relation": "city"
-    }]
+    "include": [
+      {
+        "relation": "city"
+      }
+    ]
   },
-
   "properties": {
     "id": {
       "type": "number",
@@ -77,26 +78,33 @@
   "acls": [],
   "methods": {
     "testSSH": {
-      "accepts": [{
-        "arg": "routerName",
-        "type": "string",
-        "required": true,
-        "description": ""
-      }],
-      "returns": [{
-        "arg": "result",
-        "type": "object",
-        "root": true,
-        "description": ""
-      }],
+      "accepts": [
+        {
+          "arg": "routerName",
+          "type": "string",
+          "required": true,
+          "description": ""
+        }
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/testSSH",
-        "verb": "post"
-      }]
+      "http": [
+        {
+          "path": "/testSSH",
+          "verb": "post"
+        }
+      ]
     },
     "disconnectClient": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "routerName",
           "type": "string",
           "required": true,
@@ -109,40 +117,51 @@
           "description": ""
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "object",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "object",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/disconnectClient",
-        "verb": "post"
-      }]
+      "http": [
+        {
+          "path": "/disconnectClient",
+          "verb": "post"
+        }
+      ]
     },
     "getMyLocations": {
-      "accepts": [{
-        "arg": "req",
-        "type": "object",
-        "http": {
-          "source": "req"
+      "accepts": [
+        {
+          "arg": "req",
+          "type": "object",
+          "http": {
+            "source": "req"
+          }
         }
-      }],
-      "returns": [{
-        "arg": "result",
-        "type": "array",
-        "root": true,
-        "description": ""
-      }],
+      ],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/getMyLocations",
-        "verb": "get"
-      }]
+      "http": [
+        {
+          "path": "/getMyLocations",
+          "verb": "get"
+        }
+      ]
     },
     "paidLocationsState": {
-      "accepts": [{
+      "accepts": [
+        {
           "arg": "location_id",
           "type": "number",
           "required": true,
@@ -156,32 +175,39 @@
           }
         }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "array",
-        "root": true,
-        "description": ""
-      }],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
+      ],
       "description": "",
-      "http": [{
-        "path": "/paidLocationsState",
-        "verb": "get"
-      }]
+      "http": [
+        {
+          "path": "/paidLocationsState",
+          "verb": "get"
+        }
+      ]
     },
     "getClickedAndImpression": {
-      "accepts": [
+      "accepts": [],
+      "returns": [
+        {
+          "arg": "result",
+          "type": "array",
+          "root": true,
+          "description": ""
+        }
       ],
-      "returns": [{
-        "arg": "result",
-        "type": "array",
-        "root": true,
-        "description": ""
-      }],
       "description": "",
-      "http": [{
-        "path": "/getClickedAndImpression",
-        "verb": "get"
-      }]
+      "http": [
+        {
+          "path": "/getClickedAndImpression",
+          "verb": "get"
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,7 @@
   "options": {
     "validateUpsert": true
   },
+  "replaceOnPUT": false,
   "scope": {
     "include": [
       "roles"
@@ -24,10 +25,10 @@
       "type": "string"
     },
     "balance": {
-      "type": "string"
+      "type": "number"
     },
     "min_balance": {
-      "type": "string"
+      "type": "number"
     },
     "status": {
       "type": "string",

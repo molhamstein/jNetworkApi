@@ -76,13 +76,22 @@ module.exports = function (Client) {
     console.log(code);
 
     client.updateAttributes({
-      verificationToken: code,
       emailVerified: false
     }, function (err) {
       if (err) {
 
       } else {
+        var nowDate = new Date(),
+          expDate = new Date(nowDate);
+        expDate.setMinutes(nowDate.getMinutes() + 30);
+        Client.app.models.verificationTokens.create({
+          "code": code,
+          "client_id": client.id,
+          "created_at": nowDate,
+          "expiration_date": expDate
+        }, function (err, data) {
 
+        })
       }
     });
 
@@ -170,15 +179,17 @@ module.exports = function (Client) {
       key: 'APP_SECRET' + client.mobile
     });
     console.log('Two factor code for ' + client.email + ': ' + code);
-    client.updateAttributes({
-      verificationToken: code,
-    }, function (err) {
-      if (err) {
+    var nowDate = new Date(),
+      expDate = new Date(nowDate);
+    expDate.setMinutes(nowDate.getMinutes() + 30);
+    Client.app.models.verificationTokens.create({
+      "code": code,
+      "client_id": client.id,
+      "created_at": nowDate,
+      "expiration_date": expDate
+    }, function (err, data) {
 
-      } else {
-
-      }
-    });
+    })
     request.get(
       'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your VerificationCode ' + String(code) + '&Lang=0&Flash=0',
       function (res) {
@@ -216,40 +227,62 @@ module.exports = function (Client) {
         process.nextTick(function () {
           callback(null, err2);
         });
-      } else if (user.verificationToken == code) {
-        user.updateAttributes({
-          emailVerified: true
-        }, function (err) {
-          if (err) {
-            callback(err);
-          } else {
-            var data = {
-              name: "success",
-              status: 402,
-              message: "confirmed success"
-            }
-            process.nextTick(function () {
-              callback(null, data);
-            });
-          }
-        });
-        var sql = " insert into radcheck (username,attribute,op,value) values ('" + mobile + "','password','==','" + user.np + "')"
-        connector.execute(sql, null, (err, resultObjects) => {
-          if (!err) {
-
-            console.log("added successful to radius");
-          } else
-            console.log(err);
-        })
       } else {
-        const err3 = new Error("AuthorizationFailed");
-        err3.statusCode = 601;
-        err3.code = 'AUTHORIZATION_FAILED';
-        process.nextTick(function () {
-          callback(null, err3);
-        });
-      }
+        Client.app.models.verificationTokens.findOne({
+          "where": {
+            "code": code,
+            "client_id": user.id,
+            "status": "active",
+            "expiration_date": {
+              "gt": new Date()
+            }
+          }
+        }, function (err, mainCode) {
+          if (err || mainCode == null) {
+            const err3 = new Error("AuthorizationFailed");
+            err3.statusCode = 601;
+            err3.code = 'AUTHORIZATION_FAILED';
+            process.nextTick(function () {
+              callback(null, err3);
+            });
+          } else if (new Date(mainCode.expiration_date) < new Date()) {
+            const err2 = new Error("codeIsExpired");
+            err2.statusCode = 605;
+            err2.code = 'Code_IS_EXPIRED';
+            process.nextTick(function () {
+              callback(null, err2);
+            });
+          } else {
+            user.updateAttributes({
+              emailVerified: true
+            }, function (err) {
+              if (err) {
+                callback(err);
+              } else {
+                mainCode.updateAttributes({
+                  "status": "deactive"
+                })
+                var data = {
+                  name: "success",
+                  status: 402,
+                  message: "confirmed success"
+                }
+                process.nextTick(function () {
+                  callback(null, data);
+                });
+              }
+            });
+            var sql = " insert into radcheck (username,attribute,op,value) values ('" + mobile + "','password','==','" + user.np + "')"
+            connector.execute(sql, null, (err, resultObjects) => {
+              if (!err) {
 
+                console.log("added successful to radius");
+              } else
+                console.log(err);
+            })
+          }
+        })
+      }
     });
   }
 
@@ -396,7 +429,7 @@ module.exports = function (Client) {
       if (isExport == 1)
         var sql = "SELECT username,acctstarttime,acctstoptime,calledstationid,nasipaddress  FROM radacct WHERE (" + locationWhere + " AND   acctstarttime >= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%'AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 2)
-        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND  acctstarttime <= '" +  dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss")+ "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+        var sql = "SELECT username as mobile,acctstarttime,acctstoptime,calledstationid,radacctid,update_at,nasipaddress FROM radacct WHERE (" + locationWhere + " AND   update_at > '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND  acctstarttime <= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       else if (isExport == 3)
         var sql = "SELECT username as mobile,acctstarttime,calledstationid,acctstoptime,radacctid,nasipaddress,callingstationid as mac  FROM radacct WHERE (" + locationWhere + " AND acctstoptime IS NOT NULL  AND  acctstarttime <= '" + dateFormat(new Date(new Date(to).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND  acctstoptime >= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "' AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%') ORDER BY update_at DESC LIMIT 10 OFFSET " + skip;
       else
@@ -490,7 +523,7 @@ module.exports = function (Client) {
       if (!location)
         locationWhere = 'calledStationId IN (' + names + ')';
 
-      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND   acctstarttime <= '" + dateFormat(new Date(new Date(to).toUTCString()), "yyyy-mm-dd HH:MM:ss")  + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
+      var sql = "SELECT COUNT(radacctid) as count  FROM radacct WHERE (" + locationWhere + "  AND acctstoptime IS NOT NULL AND   acctstarttime >= '" + dateFormat(new Date(new Date(from).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND   acctstarttime <= '" + dateFormat(new Date(new Date(to).toUTCString()), "yyyy-mm-dd HH:MM:ss") + "'AND username LIKE '%" + mobile + "%' AND nasipaddress LIKE '%" + ip + "%')";
       console.log("sqllllllllllll")
       console.log(sql)
       connector.execute(sql, [], function (err, users) {
@@ -696,40 +729,60 @@ module.exports = function (Client) {
 
   Client.Confirmreset = function (code, newPassword, callback) {
     var UserModel = this;
-    UserModel.findOne({
+    Client.app.models.verificationTokens.findOne({
       where: {
-        verificationToken: code
+        "code": code,
+        "status": "active"
       }
-    }, function (err, user) {
-      if (err || user == null) {
+    }, function (err, mainCode) {
+      if (err || mainCode == null) {
         const err2 = new Error("codeNOTfound");
         err2.statusCode = 604;
         err2.code = 'Code_NOT_FOUND';
         process.nextTick(function () {
           callback(null, err2);
         });
-      } else /*if(user.verificationToken == code)*/ {
-        user.updateAttributes({
-          'password': UserModel.hashPassword(newPassword),
-          'np': newPassword
-        }, function (err) {
-          if (err) {
-            fn(err);
-          } else {
-
-            var data = {
-              name: "success",
-              mobile: user.mobile,
-              status: 402,
-              message: "reset password successful"
-            }
-            process.nextTick(function () {
-              afterConfirmreset({}, user, function (err, data) {
-                callback(null, data);
-              })
+      } else if (new Date(mainCode.expiration_date) < new Date()) {
+        const err2 = new Error("codeIsExpired");
+        err2.statusCode = 605;
+        err2.code = 'Code_IS_EXPIRED';
+        process.nextTick(function () {
+          callback(null, err2);
+        });
+      } else {
+        UserModel.findOne({
+          "where": {
+            "id": mainCode.client_id
+          }
+        }, function (err, user) {
+          if (err)
+            callback(err);
+          else {
+            user.updateAttributes({
+              'password': UserModel.hashPassword(newPassword),
+              'np': newPassword
+            }, function (err) {
+              if (err) {
+                fn(err);
+              } else {
+                mainCode.updateAttributes({
+                  "status": "deactive"
+                })
+                var data = {
+                  name: "success",
+                  mobile: user.mobile,
+                  status: 402,
+                  message: "reset password successful"
+                }
+                process.nextTick(function () {
+                  afterConfirmreset({}, user, function (err, data) {
+                    callback(null, data);
+                  })
+                });
+              }
             });
           }
-        });
+        })
 
 
       }
