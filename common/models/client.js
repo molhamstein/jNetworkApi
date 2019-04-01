@@ -90,7 +90,8 @@ module.exports = function (Client) {
           "created_at": nowDate,
           "expiration_date": expDate
         }, function (err, data) {
-
+          if (err)
+            console.log(err);
         })
       }
     });
