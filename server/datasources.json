@@ -5,9 +5,9 @@
   },
   "mydb": {
     "host": "127.0.0.1",
-    "database": "demo-radius",
+    "database": "demoradius",
     "username": "root",
-    "password": "",
+    "password": "foxRiver123!@#",
     "name": "mydb",
     "connector": "mysql",
     "allowExtendedOperators": true
