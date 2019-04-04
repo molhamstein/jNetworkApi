@@ -207,75 +207,75 @@ module.exports = function (Locations) {
   };
 
 
-  schedule.scheduleJob('0 * * * * *', () => {
-    Locations.find({}, function (err, data) {
-      data.forEach(element => {
-        if (element.ip != "" && element.ip != undefined)
-          cleanLocation(element.routerName, element.ip, element.user, element.password, element.port)
-      });
-    })
-  }) // run everyday at midnight
+  // schedule.scheduleJob('0 * * * * *', () => {
+  //   Locations.find({}, function (err, data) {
+  //     data.forEach(element => {
+  //       if (element.ip != "" && element.ip != undefined)
+  //         cleanLocation(element.routerName, element.ip, element.user, element.password, element.port)
+  //     });
+  //   })
+  // }) // run everyday at midnight
 
-  function cleanLocation(routerName, ip, user, password, port) {
-    var sql = "SELECT radacctid,username FROM `radacct` WHERE `acctstoptime` IS NULL AND `calledstationid` ='" + routerName + "'"
-    console.log("sql")
-    console.log(sql)
-    connector.execute(sql, [], function (err, res) {
-      if (err)
-        return callback(err, null)
-      if (res.length == 0)
-        return
-      console.log(res)
-      var string = "";
-      res.forEach(element => {
-        string += element.radacctid + "," + element.username + ","
-      });
-      if (string != "") {
-        string = string.substr(0, string.length - 1)
-        string = "\"" + string + "\""
-      }
+  // function cleanLocation(routerName, ip, user, password, port) {
+  //   var sql = "SELECT radacctid,username FROM `radacct` WHERE `acctstoptime` IS NULL AND `calledstationid` ='" + routerName + "'"
+  //   console.log("sql")
+  //   console.log(sql)
+  //   connector.execute(sql, [], function (err, res) {
+  //     if (err)
+  //       return callback(err, null)
+  //     if (res.length == 0)
+  //       return
+  //     console.log(res)
+  //     var string = "";
+  //     res.forEach(element => {
+  //       string += element.radacctid + "," + element.username + ","
+  //     });
+  //     if (string != "") {
+  //       string = string.substr(0, string.length - 1)
+  //       string = "\"" + string + "\""
+  //     }
 
 
-      var ssh = new SSH({
-        host: ip,
-        user: user,
-        port: port,
-        pass: password
-      });
-      console.log(":global userput " + string + "; system script run checkuser")
-      ssh.exec(":global userput " + string + "; system script run checkuser", {
-          out: function (stdout) {
-            console.log("stdout");
-            console.log(stdout);
-            var response = stdout;
+  //     var ssh = new SSH({
+  //       host: ip,
+  //       user: user,
+  //       port: port,
+  //       pass: password
+  //     });
+  //     console.log(":global userput " + string + "; system script run checkuser")
+  //     ssh.exec(":global userput " + string + "; system script run checkuser", {
+  //         out: function (stdout) {
+  //           console.log("stdout");
+  //           console.log(stdout);
+  //           var response = stdout;
 
-            var stringIDS = "(";
-            if (response['value'] == undefined)
-              return
-            response['value'].forEach(element => {
-              stringIDS += "\'" + element.seeesionId + "\',"
-            });
-            if (stringIDS != "(")
-              stringIDS = stringIDS.substr(0, stringIDS.length - 1)
+  //           var stringIDS = "(";
+  //           if (response['value'] == undefined)
+  //             return
+  //           response['value'].forEach(element => {
+  //             stringIDS += "\'" + element.seeesionId + "\',"
+  //           });
+  //           if (stringIDS != "(")
+  //             stringIDS = stringIDS.substr(0, stringIDS.length - 1)
 
-            stringIDS += ")"
-            if (stringIDS != "()") {
-              var sql = "UPDATE `radacct` SET `acctstoptime` = Now() WHERE  radacctid IN " + stringIDS
-              connector.execute(sql, [], function (err, res) {
-                if (err)
-                  return callback(err, null)
-                console.log("seconde time");
-                console.log(res);
-                return callback(null, res)
-              })
-            } else {
-              return callback(null, {})
-            }
-          }
-        })
-        .start();
-    })
-  }
+  //           stringIDS += ")"
+  //           if (stringIDS != "()") {
+  //             var sql = "UPDATE `radacct` SET `acctstoptime` = Now() WHERE  radacctid IN " + stringIDS
+  //             connector.execute(sql, [], function (err, res) {
+  //               if (err)
+  //                 return callback(err, null)
+  //               console.log("seconde time");
+  //               console.log(res);
+  //               return callback(null, res)
+  //             })
+  //           } else {
+  //             return callback(null, {})
+  //           }
+  //         }
+  //       })
+  //       .start();
+  //   })
+  // }
 
   Locations.testSSH = function (routerName, callback) {
     var result;

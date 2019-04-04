@@ -215,76 +215,52 @@ module.exports = function (Client) {
 
   Client.confirmSMS = function (mobile, code, callback) {
     console.log("TEEEEEESSSSSSSST")
-    var clientM = app.models.client;
-    clientM.findOne({
-      where: {
-        mobile: mobile
+
+    Client.app.models.verificationTokens.findOne({
+      "where": {
+        "code": code,
+        "mobile": mobile,
+        "status": "active"
       }
-    }, function (err, user) {
-      if (err || user == null) {
-        const err2 = new Error("userNOTfound");
-        err2.statusCode = 604;
-        err2.code = 'USER_NOT_FOUND';
+    }, function (err, mainCode) {
+      if (err || mainCode == null) {
+        const err3 = new Error("AuthorizationFailed");
+        err3.statusCode = 601;
+        err3.code = 'AUTHORIZATION_FAILED';
+        process.nextTick(function () {
+          callback(null, err3);
+        });
+      } else if (new Date(mainCode.expiration_date) < new Date()) {
+        const err2 = new Error("codeIsExpired");
+        err2.statusCode = 605;
+        err2.code = 'Code_IS_EXPIRED';
         process.nextTick(function () {
           callback(null, err2);
         });
       } else {
-        Client.app.models.verificationTokens.findOne({
-          "where": {
-            "code": code,
-            "client_id": user.id,
-            "status": "active",
-            "expiration_date": {
-              "gt": new Date()
-            }
-          }
-        }, function (err, mainCode) {
-          if (err || mainCode == null) {
-            const err3 = new Error("AuthorizationFailed");
-            err3.statusCode = 601;
-            err3.code = 'AUTHORIZATION_FAILED';
-            process.nextTick(function () {
-              callback(null, err3);
-            });
-          } else if (new Date(mainCode.expiration_date) < new Date()) {
-            const err2 = new Error("codeIsExpired");
-            err2.statusCode = 605;
-            err2.code = 'Code_IS_EXPIRED';
-            process.nextTick(function () {
-              callback(null, err2);
-            });
-          } else {
-            user.updateAttributes({
-              emailVerified: true
-            }, function (err) {
-              if (err) {
-                callback(err);
-              } else {
-                mainCode.updateAttributes({
-                  "status": "deactive"
-                })
-                var data = {
-                  name: "success",
-                  status: 402,
-                  message: "confirmed success"
-                }
-                process.nextTick(function () {
-                  callback(null, data);
-                });
-              }
-            });
-            var sql = " insert into radcheck (username,attribute,op,value) values ('" + mobile + "','password','==','" + user.np + "')"
-            connector.execute(sql, null, (err, resultObjects) => {
-              if (!err) {
 
-                console.log("added successful to radius");
-              } else
-                console.log(err);
-            })
-          }
+        mainCode.updateAttributes({
+          "status": "deactive"
+        })
+        var data = {
+          name: "success",
+          status: 402,
+          message: "confirmed success"
+        }
+        process.nextTick(function () {
+          callback(null, data);
+        });
+
+        var sql = " insert into radcheck (username,attribute,op,value) values ('" + mobile + "','password','==','" + mainCode.code + "')"
+        connector.execute(sql, null, (err, resultObjects) => {
+          if (!err) {
+
+            console.log("added successful to radius");
+          } else
+            console.log(err);
         })
       }
-    });
+    })
   }
 
 
