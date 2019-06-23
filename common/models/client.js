@@ -66,6 +66,9 @@ module.exports = function (Client) {
     });
 
   });
+
+
+
   Client.afterRemote('create', function (context, client, next) {
     console.log('> user.afterRemote triggered');
     var code = speakeasy.totp({
@@ -489,6 +492,40 @@ module.exports = function (Client) {
     });
   }
 
+  Client.resendVerificationCode = function (req, mobile, cb) {
+
+    var code = speakeasy.totp({
+      key: 'APP_SECRET' + mobile
+    });
+    var clientM = app.models.client;
+    clientM.findOne({
+      where: {
+        mobile: mobile
+      }
+    }, function (err, user) {
+      if (err || user == null) {
+        const err2 = new Error("userNOTfound");
+        err2.statusCode = 604;
+        err2.code = 'USER_NOT_FOUND';
+        return cb(err2)
+      }
+
+      var nowDate = new Date(),
+        expDate = new Date(nowDate);
+      expDate.setMinutes(nowDate.getMinutes() + 30);
+      Client.app.models.verificationTokens.create({
+        "code": code,
+        "client_id": user.id,
+        "created_at": nowDate,
+        "expiration_date": expDate
+      }, function (err, data) {
+        if (err)
+          console.log(err);
+      })
+
+      return cb()
+    })
+  }
 
   Client.countOfflineUsersIsp = function (req, location, mobile, from, to, ip, cb) {
     if (mobile == null)
@@ -545,6 +582,32 @@ module.exports = function (Client) {
     }
     return ("false");
   }
+
+  Client.remoteMethod('resendVerificationCode', {
+    description: 'Resend Verification Code',
+    accepts: [{
+        arg: 'req',
+        type: 'object',
+        http: {
+          source: 'req'
+        }
+      },
+      {
+        arg: 'mobile',
+        type: 'string',
+        required: true,
+        http: {
+          source: 'form'
+        }
+      },
+    ],
+    http: {
+      verb: 'post',
+      path: '/resendVerificationCode'
+    },
+  });
+
+
 
   Client.remoteMethod('onlineUsers', {
     description: 'get all online users ',
@@ -777,7 +840,9 @@ module.exports = function (Client) {
                 }
                 process.nextTick(function () {
                   afterConfirmreset({}, user, function (err, data) {
-                    callback(null, data);
+                    callback(null, {
+                      "statusCode": 204
+                    });
                   })
                 });
               }
