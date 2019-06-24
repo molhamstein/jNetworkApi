@@ -521,10 +521,31 @@ module.exports = function (Client) {
       }, function (err, data) {
         if (err)
           console.log(err);
-      })
 
-      return cb()
+        request.get(
+          'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
+          function (res) {
+            // res.on('data', function (data) {
+            console.log(res);
+            // console.log(data.toString());
+            return cb()
+            // });
+          }
+        ).on('error', function () {
+          data = {
+            name: "can't send sms",
+            status: 604,
+            message: "please check your sms api"
+          };
+          console.log(data)
+          context.result = data;
+          //console.log(context.result);
+          return cb()
+        });
+
+      })
     })
+
   }
 
   Client.countOfflineUsersIsp = function (req, location, mobile, from, to, ip, cb) {
