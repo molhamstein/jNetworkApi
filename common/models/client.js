@@ -7,6 +7,7 @@ var g = require('strong-globalize')();
 var debug = require('debug')('loopback:user');
 var request = require('request');
 var dateFormat = require('dateformat');
+var async = require('async');
 
 
 const connector = app.dataSources.mydb.connector;
@@ -71,54 +72,57 @@ module.exports = function (Client) {
 
   Client.afterRemote('create', function (context, client, next) {
     console.log('> user.afterRemote triggered');
-    var code = speakeasy.totp({
-      key: 'APP_SECRET' + client.mobile
-    });
-    console.log('Two factor code for ' + client.email + ': ' + code);
-    console.log("code");
-    console.log(code);
+    generateCode(function (code) {
 
-    client.updateAttributes({
-      emailVerified: false
-    }, function (err) {
-      if (err) {
+      // var code = speakeasy.totp({
+      //   key: 'APP_SECRET' + client.mobile
+      // });
+      console.log('Two factor code for ' + client.email + ': ' + code);
+      console.log("code");
+      console.log(code);
 
-      } else {
-        var nowDate = new Date(),
-          expDate = new Date(nowDate);
-        expDate.setMinutes(nowDate.getMinutes() + 30);
-        Client.app.models.verificationTokens.create({
-          "code": code,
-          "client_id": client.id,
-          "created_at": nowDate,
-          "expiration_date": expDate
-        }, function (err, data) {
-          if (err)
-            console.log(err);
-        })
-      }
-    });
+      client.updateAttributes({
+        emailVerified: false
+      }, function (err) {
+        if (err) {
 
-    request.get(
-      'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
-      function (res) {
-        // res.on('data', function (data) {
-        console.log(res);
-        // console.log(data.toString());
+        } else {
+          var nowDate = new Date(),
+            expDate = new Date(nowDate);
+          expDate.setMinutes(nowDate.getMinutes() + 30);
+          Client.app.models.verificationTokens.create({
+            "code": code,
+            "client_id": client.id,
+            "created_at": nowDate,
+            "expiration_date": expDate
+          }, function (err, data) {
+            if (err)
+              console.log(err);
+          })
+        }
+      });
+
+      request.get(
+        'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
+        function (res) {
+          // res.on('data', function (data) {
+          console.log(res);
+          // console.log(data.toString());
+          next();
+          // });
+        }
+      ).on('error', function () {
+        data = {
+          name: "can't send sms",
+          status: 604,
+          message: "please check your sms api"
+        };
+        console.log(data)
+        context.result = data;
+        //console.log(context.result);
         next();
-        // });
-      }
-    ).on('error', function () {
-      data = {
-        name: "can't send sms",
-        status: 604,
-        message: "please check your sms api"
-      };
-      console.log(data)
-      context.result = data;
-      //console.log(context.result);
-      next();
-    });
+      });
+    })
 
   });
 
@@ -179,37 +183,40 @@ module.exports = function (Client) {
   // Client.afterRemote('reset', function (context, client, next) {
   function afterReset(context, client, next) {
     console.log('> user.afterRemote reset triggered');
-    var code = speakeasy.totp({
-      key: 'APP_SECRET' + client.mobile
-    });
-    console.log('Two factor code for ' + client.email + ': ' + code);
-    var nowDate = new Date(),
-      expDate = new Date(nowDate);
-    expDate.setMinutes(nowDate.getMinutes() + 30);
-    Client.app.models.verificationTokens.create({
-      "code": code,
-      "client_id": client.id,
-      "created_at": nowDate,
-      "expiration_date": expDate
-    }, function (err, data) {
+    generateCode(function (code) {
 
-    })
-    request.get(
-      'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your VerificationCode ' + String(code) + '&Lang=0&Flash=0',
-      function (res) {
-        // res.on('data', function (data) {
-        console.log(res);
+      // var code = speakeasy.totp({
+      //   key: 'APP_SECRET' + client.mobile
+      // });
+      console.log('Two factor code for ' + client.email + ': ' + code);
+      var nowDate = new Date(),
+        expDate = new Date(nowDate);
+      expDate.setMinutes(nowDate.getMinutes() + 30);
+      Client.app.models.verificationTokens.create({
+        "code": code,
+        "client_id": client.id,
+        "created_at": nowDate,
+        "expiration_date": expDate
+      }, function (err, data) {
+
+      })
+      request.get(
+        'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (client.mobile).substr(2) + '&Msg=Your VerificationCode ' + String(code) + '&Lang=0&Flash=0',
+        function (res) {
+          // res.on('data', function (data) {
+          console.log(res);
+          next();
+          // });
+        }
+      ).on('error', function () {
+        var data = {
+          name: "can't send sms",
+          status: 604,
+          message: "please check your sms api"
+        };
         next();
-        // });
-      }
-    ).on('error', function () {
-      var data = {
-        name: "can't send sms",
-        status: 604,
-        message: "please check your sms api"
-      };
-      next();
-    });
+      });
+    })
 
   };
 
@@ -492,57 +499,93 @@ module.exports = function (Client) {
     });
   }
 
+
+  function generateCode(callback) {
+
+    var client_MD = Client
+    async.whilst(function () {
+        return true;
+      },
+      function (next) {
+        var code = Math.floor(1000 + Math.random() * 9000);
+        client_MD.app.models.verificationTokens.findOne({
+          "where": {
+            "code": code,
+            "status": "active",
+            "expiration_date": {
+              "gt": new Date()
+            }
+          }
+        }, function (err, mainCode) {
+          if (mainCode) {
+            console.log("Try again" + code)
+            next();
+          } else {
+            console.log("Done")
+            callback(code);
+          }
+        })
+      },
+      function (err) {
+        // All things are done!
+      });
+  }
+
   Client.resendVerificationCode = function (req, mobile, cb) {
 
-    var code = speakeasy.totp({
-      key: 'APP_SECRET' + mobile
-    });
-    var clientM = app.models.client;
-    clientM.findOne({
-      where: {
-        mobile: mobile
-      }
-    }, function (err, user) {
-      if (err || user == null) {
-        const err2 = new Error("userNOTfound");
-        err2.statusCode = 604;
-        err2.code = 'USER_NOT_FOUND';
-        return cb(err2)
-      }
+    generateCode(function (code) {
+      console.log(code);
 
-      var nowDate = new Date(),
-        expDate = new Date(nowDate);
-      expDate.setMinutes(nowDate.getMinutes() + 30);
-      Client.app.models.verificationTokens.create({
-        "code": code,
-        "client_id": user.id,
-        "created_at": nowDate,
-        "expiration_date": expDate
-      }, function (err, data) {
-        if (err)
-          console.log(err);
+      // var code = speakeasy.totp({
+      //   key: 'APP_SECRET' + mobile
+      // });
+      var clientM = app.models.client;
+      clientM.findOne({
+        where: {
+          mobile: mobile
+        }
+      }, function (err, user) {
+        if (err || user == null) {
+          const err2 = new Error("userNOTfound");
+          err2.statusCode = 604;
+          err2.code = 'USER_NOT_FOUND';
+          return cb(err2)
+        }
 
-        request.get(
-          'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (user.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
-          function (res) {
-            // res.on('data', function (data) {
-            console.log(res);
-            // console.log(data.toString());
+        var nowDate = new Date(),
+          expDate = new Date(nowDate);
+        expDate.setMinutes(nowDate.getMinutes() + 30);
+        Client.app.models.verificationTokens.create({
+          "code": code,
+          "client_id": user.id,
+          "created_at": nowDate,
+          "expiration_date": expDate
+        }, function (err, data) {
+          if (err)
+            console.log(err);
+
+          request.get(
+            'https://services.mtnsyr.com:7443/general/MTNSERVICES/ConcatenatedSender.aspx?User=LEMA%20ISP%202013&Pass=L1E2M3A4&From=LEMA-ISP&Gsm=' + (user.mobile).substr(2) + '&Msg=Your%20Verification%20Code ' + String(code) + '&Lang=0&Flash=0',
+            function (res) {
+              // res.on('data', function (data) {
+              console.log(res);
+              // console.log(data.toString());
+              return cb()
+              // });
+            }
+          ).on('error', function () {
+            data = {
+              name: "can't send sms",
+              status: 604,
+              message: "please check your sms api"
+            };
+            console.log(data)
+            context.result = data;
+            //console.log(context.result);
             return cb()
-            // });
-          }
-        ).on('error', function () {
-          data = {
-            name: "can't send sms",
-            status: 604,
-            message: "please check your sms api"
-          };
-          console.log(data)
-          context.result = data;
-          //console.log(context.result);
-          return cb()
-        });
+          });
 
+        })
       })
     })
 
