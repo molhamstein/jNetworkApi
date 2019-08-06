@@ -52,6 +52,10 @@
     },
     "ip": {
       "type": "string"
+    } ,    
+    "byPassAllow" : {
+      "type" : "boolean" , 
+      "required" : false 
     }
   },
   "validations": [],

@@ -6,8 +6,8 @@
   "mydb": {
     "host": "127.0.0.1",
     "database": "radius",
-    "username": "root",
-    "password": "jihad_lts",
+    "username": "rami",
+    "password": "",
     "name": "mydb",
     "connector": "mysql",
     "allowExtendedOperators": true

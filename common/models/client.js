@@ -31,8 +31,8 @@ module.exports = function (Client) {
   Client.validate('mobile', function (err) {
     if (this.mobile !== undefined && !re.test(this.mobile)) err();
   }, {
-    message: 'mobile format is invalid'
-  });
+      message: 'mobile format is invalid'
+    });
 
   // Adds email uniqueness validation
   //  Client.validatesUniquenessOf('mobile', {message: 'Mobile already exists'}); 
@@ -322,21 +322,21 @@ module.exports = function (Client) {
   Client.remoteMethod('customSms', {
     description: 'send message to user',
     accepts: [{
-        arg: 'mobile',
-        type: 'string',
-        required: true,
-        http: {
-          source: 'form'
-        }
-      },
-      {
-        arg: 'message',
-        type: 'string',
-        required: true,
-        http: {
-          source: 'form'
-        }
-      },
+      arg: 'mobile',
+      type: 'string',
+      required: true,
+      http: {
+        source: 'form'
+      }
+    },
+    {
+      arg: 'message',
+      type: 'string',
+      required: true,
+      http: {
+        source: 'form'
+      }
+    },
     ],
     returns: {
       arg: 'message',
@@ -504,8 +504,8 @@ module.exports = function (Client) {
 
     var client_MD = Client
     async.whilst(function () {
-        return true;
-      },
+      return true;
+    },
       function (next) {
         var code = Math.floor(1000 + Math.random() * 9000);
         client_MD.app.models.verificationTokens.findOne({
@@ -650,20 +650,20 @@ module.exports = function (Client) {
   Client.remoteMethod('resendVerificationCode', {
     description: 'Resend Verification Code',
     accepts: [{
-        arg: 'req',
-        type: 'object',
-        http: {
-          source: 'req'
-        }
-      },
-      {
-        arg: 'mobile',
-        type: 'string',
-        required: true,
-        http: {
-          source: 'form'
-        }
-      },
+      arg: 'req',
+      type: 'object',
+      http: {
+        source: 'req'
+      }
+    },
+    {
+      arg: 'mobile',
+      type: 'string',
+      required: true,
+      http: {
+        source: 'form'
+      }
+    },
     ],
     http: {
       verb: 'post',
@@ -676,19 +676,19 @@ module.exports = function (Client) {
   Client.remoteMethod('onlineUsers', {
     description: 'get all online users ',
     accepts: [{
-        arg: 'req',
-        type: 'object',
-        http: {
-          source: 'req'
-        }
-      },
-      {
-        arg: 'location',
-        type: 'string',
-        http: {
-          source: 'query'
-        }
-      },
+      arg: 'req',
+      type: 'object',
+      http: {
+        source: 'req'
+      }
+    },
+    {
+      arg: 'location',
+      type: 'string',
+      http: {
+        source: 'query'
+      }
+    },
     ],
     returns: {
       arg: 'users',
@@ -704,61 +704,61 @@ module.exports = function (Client) {
   Client.remoteMethod('onlineUsersIsp', {
     description: 'get all online users ',
     accepts: [{
-        arg: 'req',
-        type: 'object',
-        http: {
-          source: 'req'
-        }
-      },
-      {
-        arg: 'location',
-        type: 'string',
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'mobile',
-        type: 'string',
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'from',
-        type: "date",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'to',
-        type: "date",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'skip',
-        type: "integer",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'ip',
-        type: "string",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'isExport',
-        type: "int",
-        http: {
-          source: 'query'
-        }
-      },
+      arg: 'req',
+      type: 'object',
+      http: {
+        source: 'req'
+      }
+    },
+    {
+      arg: 'location',
+      type: 'string',
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'mobile',
+      type: 'string',
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'from',
+      type: "date",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'to',
+      type: "date",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'skip',
+      type: "integer",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'ip',
+      type: "string",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'isExport',
+      type: "int",
+      http: {
+        source: 'query'
+      }
+    },
     ],
     returns: {
       arg: 'users',
@@ -774,47 +774,47 @@ module.exports = function (Client) {
   Client.remoteMethod('countOfflineUsersIsp', {
     description: 'get all online users ',
     accepts: [{
-        arg: 'req',
-        type: 'object',
-        http: {
-          source: 'req'
-        }
-      },
-      {
-        arg: 'location',
-        type: 'string',
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'mobile',
-        type: 'string',
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'from',
-        type: "date",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'to',
-        type: "date",
-        http: {
-          source: 'query'
-        }
-      },
-      {
-        arg: 'ip',
-        type: "string",
-        http: {
-          source: 'query'
-        }
+      arg: 'req',
+      type: 'object',
+      http: {
+        source: 'req'
       }
+    },
+    {
+      arg: 'location',
+      type: 'string',
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'mobile',
+      type: 'string',
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'from',
+      type: "date",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'to',
+      type: "date",
+      http: {
+        source: 'query'
+      }
+    },
+    {
+      arg: 'ip',
+      type: "string",
+      http: {
+        source: 'query'
+      }
+    }
     ],
     returns: {
       arg: 'users',
@@ -831,16 +831,16 @@ module.exports = function (Client) {
     'Confirmreset', {
       description: 'confirm reset password',
       accepts: [{
-          arg: 'code',
-          type: 'string',
-          required: true
-        },
-        {
-          arg: 'newPassword',
-          type: 'string',
-          required: true,
-          description: 'new password'
-        },
+        arg: 'code',
+        type: 'string',
+        required: true
+      },
+      {
+        arg: 'newPassword',
+        type: 'string',
+        required: true,
+        description: 'new password'
+      },
       ],
       returns: {
         arg: 'data',
@@ -953,109 +953,119 @@ module.exports = function (Client) {
       return fn.promise;
     }
 
-    self.findOne({
-      where: query
-    }, function (err, user) {
-      var defaultError = new Error(g.f('login failed'));
-      defaultError.statusCode = 401;
-      defaultError.code = 'LOGIN_FAILED';
+    Client.app.models.locations.findById(credentials.location_id,
+      (err, location) => {
 
-      function tokenHandler(err, token) {
-        if (err) return fn(err);
-        if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
-          // NOTE(bajtos) We can't set token.user here:
-          //  1. token.user already exists, it's a function injected by
-          //     "AccessToken belongsTo User" relation
-          //  2. ModelBaseClass.toJSON() ignores own properties, thus
-          //     the value won't be included in the HTTP response
-          // See also loopback#161 and loopback#162
+        self.findOne({
+          where: query
+        }, function (err, user) {
+          var defaultError = new Error(g.f('login failed'));
+          defaultError.statusCode = 401;
+          defaultError.code = 'LOGIN_FAILED';
 
-          token.__data.user = user;
-        }
-        afterLogin({}, user, function (err) {
-          if (err)
-            fn(err, null)
-          else if (credentials.location_id == null || credentials.location_id == undefined)
-            fn(err, token);
-          else
-            Client.app.models.locations.find({
-              where: {
-                id: credentials.location_id
-              }
-            }, function (err, location) {
-              token.type_location = location[0].type
-              if (location[0].type != 'manual')
+          function tokenHandler(err, token) {
+            if (err) return fn(err);
+            if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
+              // NOTE(bajtos) We can't set token.user here:
+              //  1. token.user already exists, it's a function injected by
+              //     "AccessToken belongsTo User" relation
+              //  2. ModelBaseClass.toJSON() ignores own properties, thus
+              //     the value won't be included in the HTTP response
+              // See also loopback#161 and loopback#162
+
+              token.__data.user = user;
+            }
+            afterLogin({}, user, function (err) {
+              if (err)
+                fn(err, null)
+              else if (credentials.location_id == null || credentials.location_id == undefined)
                 fn(err, token);
-              else {
-                Client.app.models.pendingClient.find({
+              else
+                Client.app.models.locations.find({
                   where: {
-                    "and": [{
-                        location_id: credentials.location_id
-                      },
-                      {
-                        client_id: token.userId
-                      },
-                    ]
+                    id: credentials.location_id
                   }
-                }, function (err, clinet) {
-                  if (err)
-                    fn(err, null);
-                  if (clinet[0] != null && clinet[0].status == "active") {
-                    token['pendingClient'] = false
+                }, function (err, location) {
+                  token.type_location = location[0].type
+                  if (location[0].type != 'manual')
                     fn(err, token);
-                  } else if (clinet[0] != null && clinet[0].status != "active") {
-                    var defaultError = new Error(g.f('You are pending client'));
-                    defaultError.statusCode = 627;
-                    defaultError.code = 'YOU_ARE_PENDING_CLIENT';
-                    fn(defaultError, null);
-                  } else if (clinet[0] == null) {
-                    Client.app.models.pendingClient.create({
-                      "client_id": token.userId,
-                      "location_id": credentials.location_id
-                    }, function (err, data) {
+                  else {
+                    Client.app.models.pendingClient.find({
+                      where: {
+                        "and": [{
+                          location_id: credentials.location_id
+                        },
+                        {
+                          client_id: token.userId
+                        },
+                        ]
+                      }
+                    }, function (err, clinet) {
                       if (err)
                         fn(err, null);
-                      var defaultError = new Error(g.f('You are pending client'));
-                      defaultError.statusCode = 627;
-                      defaultError.code = 'YOU_ARE_PENDING_CLIENT';
-                      fn(defaultError, null);
+                      if (clinet[0] != null && clinet[0].status == "active") {
+                        token['pendingClient'] = false
+                        fn(err, token);
+                      } else if (clinet[0] != null && clinet[0].status != "active") {
+                        var defaultError = new Error(g.f('You are pending client'));
+                        defaultError.statusCode = 627;
+                        defaultError.code = 'YOU_ARE_PENDING_CLIENT';
+                        fn(defaultError, null);
+                      } else if (clinet[0] == null) {
+                        Client.app.models.pendingClient.create({
+                          "client_id": token.userId,
+                          "location_id": credentials.location_id
+                        }, function (err, data) {
+                          if (err)
+                            fn(err, null);
+                          var defaultError = new Error(g.f('You are pending client'));
+                          defaultError.statusCode = 627;
+                          defaultError.code = 'YOU_ARE_PENDING_CLIENT';
+                          fn(defaultError, null);
+                        })
+                      }
                     })
                   }
                 })
-              }
             })
-        })
 
 
-      }
+          }
 
-      if (err) {
-        debug('An error is reported from User.findOne: %j', err);
-        fn(defaultError);
-      } else if (user) {
-        user.hasPassword(credentials.password, function (err, isMatch) {
           if (err) {
-            debug('An error is reported from User.hasPassword: %j', err);
+            debug('An error is reported from User.findOne: %j', err);
             fn(defaultError);
-          } else if (isMatch) {
+          } else if (user) {
 
-            if (user.createAccessToken.length === 2) {
-              user.createAccessToken(credentials.ttl, tokenHandler);
-            } else {
-              user.createAccessToken(credentials.ttl, credentials, tokenHandler);
-            }
+            let passed = true;
+            if (user.IsByPass == true && location && location.byPassAllow == false)
+              passed = false;
 
+            user.hasPassword(credentials.password, function (err, isMatch) {
+              if (err) {
+                debug('An error is reported from User.hasPassword: %j', err);
+                fn(defaultError);
+              } else if (isMatch && passed) {
+
+                if (user.createAccessToken.length === 2) {
+                  user.createAccessToken(credentials.ttl, tokenHandler);
+                } else {
+                  user.createAccessToken(credentials.ttl, credentials, tokenHandler);
+                }
+
+              } else {
+                debug('The password is invalid for user %s', query.email || query.username);
+                fn(defaultError);
+              }
+            });
           } else {
-            debug('The password is invalid for user %s', query.email || query.username);
+            debug('No matching record is found for user %s', query.email || query.username);
             fn(defaultError);
           }
         });
-      } else {
-        debug('No matching record is found for user %s', query.email || query.username);
-        fn(defaultError);
-      }
-    });
+      });
     return fn.promise;
+
   }
 
   var DEFAULT_RESET_PW_TTL = 15 * 60; // 15 mins in seconds
