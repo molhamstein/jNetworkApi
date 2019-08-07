@@ -14,7 +14,7 @@ let main = async () => {
         mobile: '00963999999999',
         gender: 'female',
         profession : "I am princess I don't work" , 
-        birthdate : '' , 
+        birthdate : '1/1/1990' , 
         isByPass: true,
         email : '', 
 
