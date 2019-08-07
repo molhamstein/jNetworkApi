@@ -1038,7 +1038,7 @@ module.exports = function (Client) {
           } else if (user) {
 
             let passed = true;
-            if (user.IsByPass == true && location && location.byPassAllow == false)
+            if (user.isByPass == true && location && location.byPassAllow == false)
               passed = false;
 
             user.hasPassword(credentials.password, function (err, isMatch) {

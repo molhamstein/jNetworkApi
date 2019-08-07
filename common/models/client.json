@@ -32,7 +32,7 @@
       "required": false,
       "defaultFn": "now"
     } ,
-    "IsByPass" : {
+    "isByPass" : {
       "type" : "boolean" , 
       "required" : false, 
       "default" : false 

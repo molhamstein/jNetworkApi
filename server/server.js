@@ -9,7 +9,7 @@ var app = module.exports = loopback();
 const LoopBackContext = require('loopback-context');
 app.use(LoopBackContext.perRequest());
 app.use(loopback.token());
-
+app.static
 
 app.start = function () {
   // start the web server
